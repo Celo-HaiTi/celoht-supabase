@@ -28,13 +28,21 @@ Documentation is kept at the repository root.
 
 ## Quick start
 
+Migrations yo nan rasin repo a, se pa nan `supabase/migrations/`. Pou aplike
+yo ak Supabase SQL Editor, kouri fichye SQL yo nan lòd `0001` rive `0011`.
+
+Pou verifikasyon lokal:
+
 ```bash
-supabase link --project-ref <your-project-ref>
-supabase db push
+npm run validate
 ```
 
-Run `npm run validate`. See `MIGRATIONS.md` for details and `RLS.md` before granting any
-role access in a real project.
+Pou yon pwojè Supabase ki gen CLI/configuration setup, itilize pipeline CI a
+oswa adapte migration yo nan estrikti `supabase/migrations/` anvan ou kouri
+`supabase db push`.
+
+Gade [MIGRATIONS.md](MIGRATIONS.md) pou plis detay epi li [RLS.md](RLS.md)
+anvan ou bay nenpòt aksè role nan yon pwojè reyèl.
 
 ## Network status
 
@@ -50,11 +58,22 @@ official Mainnet deployment file.
 - [x] Migrations have deterministic static validation and CI PostgreSQL execution.
 - [x] Every application table has RLS enabled with explicit policies.
 - [x] Sensitive storage buckets (`agent-kyc`, `reforestation-evidence`,
-      `certificates`) are private with no public-URL path.
+  `certificates`, `education-materials`) are private with no public-URL path.
 - [x] `audit_logs` has no update/delete policy for any role.
 - [x] No secrets, private keys, or fake data are present in this repository.
 - [ ] Apply and verify against a disposable Supabase project.
 - [ ] Independent security review before production use.
+
+## Documentation
+
+- [ARCHITECTURE.md](ARCHITECTURE.md)
+- [DATABASE.md](DATABASE.md)
+- [DATA_MODEL.md](DATA_MODEL.md)
+- [DEPLOYMENT.md](DEPLOYMENT.md)
+- [INDEXER_SCHEMA.md](INDEXER_SCHEMA.md)
+- [RLS.md](RLS.md)
+- [SECURITY.md](SECURITY.md)
+- [STORAGE.md](STORAGE.md)
 
 ## Next phases
 
