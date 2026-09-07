@@ -10,8 +10,8 @@
 
 ## Rules
 1. Role changes are never accepted from client input. The `profiles_update_own`
-   RLS policy explicitly freezes `role = 'user'` on self-updates so a user
-   cannot escalate their own role through the API.
+   RLS policy preserves the existing role on self-updates so a user cannot
+   escalate their own role through the API.
 2. Only `admin` can change another profile's role (`profiles_update_admin`).
 3. Every sensitive administrative action (KYC decision, agent
    suspension, evidence verification, content publication, config change)

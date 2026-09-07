@@ -14,6 +14,7 @@ Migrations are numbered and must be applied in order:
 9. `0009_schema_production.sql` (normalized production schema)
 10. `0010_rls_production.sql` (RLS for normalized schema)
 11. `0011_storage_production.sql` (private education materials)
+12. `0012_schema_hardening.sql` (reorg history, reconciliation, security events, append-only enforcement)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:
@@ -38,3 +39,8 @@ as a new numbered migration file before it is considered part of the schema.
   environment (staging/production). Add a new numbered file instead.
 - Keep each migration focused (schema OR RLS OR storage OR data), matching
   the existing file boundaries, so review stays tractable.
+
+CI applies every migration with `ON_ERROR_STOP=1` and runs
+`tests/database.sql`. A disposable Supabase project remains a required
+pre-production check because local PostgreSQL does not reproduce every
+Supabase-managed grant and storage implementation detail.

@@ -22,6 +22,7 @@ SQL migrations (repository root):
   0009_schema_production.sql  normalized production entities
   0010_rls_production.sql     deny-by-default RLS for new entities
   0011_storage_production.sql private education materials
+  0012_schema_hardening.sql   reorg, reconciliation, and audit hardening
 
 Documentation is kept at the repository root.
 ```
@@ -29,7 +30,7 @@ Documentation is kept at the repository root.
 ## Quick start
 
 Migrations yo nan rasin repo a, se pa nan `supabase/migrations/`. Pou aplike
-yo ak Supabase SQL Editor, kouri fichye SQL yo nan lòd `0001` rive `0011`.
+yo ak Supabase SQL Editor, kouri fichye SQL yo nan lòd `0001` rive `0012`.
 
 Pou verifikasyon lokal:
 
@@ -74,6 +75,10 @@ official Mainnet deployment file.
 - [RLS.md](RLS.md)
 - [SECURITY.md](SECURITY.md)
 - [STORAGE.md](STORAGE.md)
+- [SCHEMA.md](SCHEMA.md)
+- [DATA_PROVENANCE.md](DATA_PROVENANCE.md)
+- [BACKUP_RECOVERY.md](BACKUP_RECOVERY.md)
+- [OPERATIONS.md](OPERATIONS.md)
 
 ## Next phases
 

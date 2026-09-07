@@ -1,7 +1,7 @@
 # RLS.md — Row Level Security Model
 
-All tables introduced by `0009_schema_production.sql` are enabled for RLS in
-`0010_rls_production.sql`. No policy means deny. Service-role connections used
+All tables introduced by `0009_schema_production.sql` and `0012_schema_hardening.sql` are enabled for RLS in
+`0010_rls_production.sql` and `0012_schema_hardening.sql`. No policy means deny. Service-role connections used
 by the backend and indexer bypass RLS and must be constrained by their code,
 secret storage, and integration tests.
 
@@ -27,7 +27,7 @@ call, so authorization logic lives in one place.
 
 | Table | Public/self read | Elevated read | Write |
 |---|---|---|---|
-| `profiles` | own row | admin/reviewer | own row (role frozen to `user`), admin any |
+| `profiles` | own row | admin/reviewer | own row with role preserved, admin any |
 | `agents` | own row | reviewer/admin | insert own, update reviewer/admin |
 | `agent_kyc` | own agent's rows | reviewer/admin | insert own, update reviewer/admin |
 | `courses`/`modules`/`lessons` | published only | admin (all statuses) | admin only |
@@ -42,6 +42,7 @@ call, so authorization logic lives in one place.
 | `indexer_state` | — | admin only | service role only |
 | `audit_logs` | — | admin only | service role only, **no update/delete policy for any role** |
 | `system_health` | public | — | service role only |
+| `indexer_reconciliation_issues`/`security_events` | — | admin only | service role only, append-only |
 
 ## Why some on-chain tables are "public read"
 `blockchain_transactions`, `agent_transactions`, `reforestation_contributions`,

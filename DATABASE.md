@@ -1,7 +1,7 @@
 # DATABASE.md — CeloHT Supabase Schema
 
 ## Scope
-This document describes the relational schema created by `migrations/0001`–`0008`.
+This document describes the relational schema created by root migrations `0001`–`0012`.
 It is the single source of truth for table structure. No table, column, or
 constraint exists in production that is not represented in these migrations.
 
@@ -61,6 +61,8 @@ tables added in migrations `0009`–`0011` are described below.
 - `audit_logs` — append-only log of sensitive administrative actions.
 - `system_health` — latest health snapshot per component (`backend` / `indexer`).
 - `administrative_actions` — append-only administrative action idempotency and metadata.
+- `indexer_reconciliation_issues` — explicit missing, stale, orphaned, and mismatched observation work items.
+- `security_events` — append-only security telemetry without secrets.
 
 ## On-chain vs. off-chain, at a glance
 

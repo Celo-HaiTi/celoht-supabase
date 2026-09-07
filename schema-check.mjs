@@ -11,6 +11,7 @@ const requiredTables = [
   'blockchain_networks', 'contracts', 'indexed_blocks', 'indexed_transactions',
   'blockchain_events', 'indexer_sync_state', 'system_health', 'audit_logs',
   'administrative_actions',
+  'indexer_reconciliation_issues', 'security_events',
 ];
 
 for (const table of requiredTables) {
@@ -29,6 +30,15 @@ if (!sql.includes('unique (chain_id, transaction_hash, log_index)')) {
 }
 if (!sql.includes("values ('education-materials', 'education-materials', false)")) {
   throw new Error('missing private education storage bucket');
+}
+if (!sql.includes("confirmation_status in ('canonical', 'orphaned', 'confirmed')")) {
+  throw new Error('missing reorganization block state');
+}
+if (!sql.includes('indexed_blocks_one_canonical_per_height')) {
+  throw new Error('missing canonical block uniqueness rule');
+}
+if (!sql.includes('trg_audit_logs_append_only')) {
+  throw new Error('missing append-only audit trigger');
 }
 if (sql.includes('create policy') && sql.match(/on storage\.objects for select\s+using \(bucket_id = '(agent-kyc|reforestation-evidence)'\s+and auth\.role\(\) = 'anon'/)) {
   throw new Error('sensitive storage policy permits anonymous access');

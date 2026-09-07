@@ -23,6 +23,11 @@ authorization decisions that matter are enforced either by:
   defense-in-depth measure behind backend-side validation.
 - Transaction hash columns are constrained similarly
   (`^0x[0-9a-f]{64}$`).
+- Reorg observations are retained as `orphaned` rows; only one observation per
+  chain and block height may be `canonical` or `confirmed`.
+- `audit_logs`, `administrative_actions`, and `security_events` have database
+  triggers that reject update and delete operations, including service-role
+  database sessions.
 
 ## Secrets handling
 No secrets are committed to this repository. `.env.example` lists every
