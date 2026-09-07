@@ -16,17 +16,19 @@ $$;
 -- Roles are stored server-side in profiles.role and are NEVER trusted from the client.
 create or replace function public.has_role(required_roles text[])
 returns boolean
-language sql
+language plpgsql
 stable
 security definer
 set search_path = public
 as $$
-  select exists (
+begin
+  return exists (
     select 1
     from public.profiles p
     where p.id = auth.uid()
       and p.role = any(required_roles)
   );
+end;
 $$;
 
 comment on function public.has_role(text[]) is
