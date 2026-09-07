@@ -11,6 +11,9 @@ authorization decisions that matter are enforced either by:
 - `SUPABASE_SERVICE_ROLE_KEY` must never be shipped to a browser bundle or
   exposed via a `NEXT_PUBLIC_*` environment variable.
 - No table trusts a client-supplied role/flag for authorization.
+- Normalized role and permission assignments are stored server-side in
+  `profile_roles` and `role_permissions`; role changes synchronize the legacy
+  profile field through a security-definer trigger.
 - `audit_logs` has no update or delete policy for any Postgres role reachable
   from the API layer — it is append-only in practice.
 - Financial/token amounts use `numeric(38,18)`; floating point is never used
@@ -36,3 +39,5 @@ secret manager.
 - Wallet-based authentication (nonce/challenge/signature) is implemented in
   `celoht-backend`, not in this repository — this repository only prepares
   the `profiles` table and Auth linkage it depends on.
+- SQL syntax and structural checks run in CI. Disposable Supabase validation
+  and independent security review remain required before production use.

@@ -4,7 +4,19 @@ This document is the interface contract that `celoht-indexer` (Phase 3) must
 follow. It does not implement indexing logic itself — this repository only
 owns the schema.
 
-## Tables the indexer writes (service role only)
+## Canonical tables the indexer writes (service role only)
+- `blockchain_networks` and `contracts` — deployment metadata copied from the
+  official smart-contracts manifest. `metadata_ref` must identify that source.
+- `indexed_blocks` and `indexed_transactions` — chain observations used for
+  confirmation and reorganization handling.
+- `blockchain_events` — one decoded row per event log. Idempotency key:
+  `(chain_id, transaction_hash, log_index)`.
+- `indexer_sync_state` — one checkpoint per `(chain_id, contract_id)`.
+
+The earlier tables below remain compatibility tables for existing consumers.
+New indexer work should target the canonical tables above.
+
+## Compatibility tables the indexer writes (service role only)
 - `blockchain_transactions` — one row per decoded event log.
   Uniqueness key: `(chain_id, transaction_hash, log_index)`. Upsert on this
   key to stay idempotent across restarts/backfills.
@@ -22,9 +34,10 @@ owns the schema.
 - `system_health` — periodic `component = 'indexer'` rows.
 
 ## Tables the indexer must never write
-`profiles`, `agent_kyc`, `courses`, `course_modules`, `lessons`,
-`course_progress`, `certificates`, `reforestation_projects`,
-`reforestation_evidence`, `audit_logs`. These are BACKEND OWNED.
+`profiles`, `wallet_identities`, `roles`, `permissions`, `agent_verifications`,
+`courses`, `course_modules`, `lessons`, `enrollments`, `lesson_progress`,
+`certificates`, `reforestation_projects`, `tree_records`, `impact_records`,
+`audit_logs`, and `administrative_actions`. These are BACKEND OWNED.
 
 ## Contract & network source of truth
 Contract addresses, ABIs, and deployment block numbers must be loaded from
@@ -38,3 +51,6 @@ that network rather than guessing.
 Every insert into `blockchain_transactions` must be an upsert keyed on
 `(chain_id, transaction_hash, log_index)` so re-running a backfill or
 recovering from a crash never creates duplicate rows.
+
+For canonical events, retain observed block and transaction hashes and mark
+reorged observations `orphaned` rather than deleting history blindly.

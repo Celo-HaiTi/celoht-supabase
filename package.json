@@ -1,0 +1,11 @@
+{
+  "name": "celoht-supabase-schema",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "validate": "node schema-check.mjs"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

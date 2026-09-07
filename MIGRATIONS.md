@@ -11,6 +11,9 @@ Migrations are numbered and must be applied in order:
 6. `0006_rls.sql`
 7. `0007_storage.sql`
 8. `0008_seed.sql` (no-op placeholder — contains no fake data by design)
+9. `0009_schema_production.sql` (normalized production schema)
+10. `0010_rls_production.sql` (RLS for normalized schema)
+11. `0011_storage_production.sql` (private education materials)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:
@@ -20,8 +23,8 @@ supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
-Or, without the CLI, run each file in `migrations/` in order through the
-Supabase SQL editor.
+Or, without the CLI, run each root-level SQL file in order through the
+Supabase SQL editor. CI runs them against PostgreSQL with `ON_ERROR_STOP=1`.
 
 ## Reproducibility guarantee
 A brand-new Supabase project, given only this repository, must be able to

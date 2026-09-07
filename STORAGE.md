@@ -8,6 +8,7 @@
 | `reforestation-evidence` | No | Physical impact evidence (photos, reports) | `{project_id}/{filename}` |
 | `certificates` | No | Issued certificate files | `{profile_id}/{filename}` |
 | `user-media` | Yes | Avatars, non-sensitive user media | `{profile_id}/{filename}` |
+| `education-materials` | No | Course files and learning materials | `{course_id}/{filename}` |
 
 ## Access model
 - `agent-kyc`, `reforestation-evidence`, `certificates` are **private buckets**.
@@ -18,6 +19,8 @@
      the request server-side.
 - `user-media` is public because avatars are not sensitive, but writes are
   still restricted to the owning profile.
+- `education-materials` is private. Authenticated users can read objects only
+   when the path begins with a published course ID; administrators manage files.
 
 ## Sensitive document handling rules
 1. Never generate a permanent public link for `agent-kyc` or

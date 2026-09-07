@@ -16,21 +16,31 @@ constraint exists in production that is not represented in these migrations.
 
 ## Table groups
 
+The original tables remain compatibility surfaces. The canonical normalized
+tables added in migrations `0009`–`0011` are described below.
+
 ### Identity & profiles
 - `profiles` — one row per Supabase Auth user, linked 1:1 to a verified wallet address.
+- `wallet_identities` — normalized wallet links with one optional primary wallet.
+- `roles`, `permissions`, `profile_roles`, `role_permissions` — server-side authorization catalog.
 
 ### Agents
 - `agents` — off-chain application/KYC lifecycle. `off_chain_kyc_status` is
   backend-controlled; `on_chain_registry_status` is a read-only mirror
   populated exclusively by the indexer from `CeloHTAgentRegistry` events.
 - `agent_kyc` — individual KYC document submissions and review history.
+- `agent_profiles`, `agent_verifications`, `agent_activity` — normalized agent application, review, and activity records.
 
 ### Education
 - `courses`, `course_modules`, `lessons` — content hierarchy with explicit ordering.
 - `course_progress` — per-user, per-lesson completion state.
 - `certificates` — issued only by the backend after verifying completion.
+- `enrollments`, `lesson_progress` — normalized course participation and lesson state.
 
 ### On-chain ledger (INDEXER OWNED)
+- `blockchain_networks`, `contracts` — deployment sources and verified contract identities.
+- `indexed_blocks`, `indexed_transactions`, `blockchain_events` — block/transaction/event projection with reorg status and event-log idempotency.
+- `indexer_sync_state` — per-contract checkpoint and error state.
 - `blockchain_transactions` — generic decoded-event table for every indexed
   contract event. Idempotency key: `(chain_id, transaction_hash, log_index)`.
 - `agent_transactions` — `CeloHTServicePayments` events tied to a specific agent.
@@ -43,11 +53,14 @@ constraint exists in production that is not represented in these migrations.
 - `reforestation_evidence` — the **only** source of truth for verified physical
   tree-planting impact. A financial contribution row never implies this table
   should be updated automatically.
+- `donations`, `tree_records`, `impact_records` — donation lineage and explicitly
+  recorded operational evidence; no tree or metric is inferred from payment.
 
 ### Operations
 - `indexer_state` — sync checkpoints per `(chain_id, contract_address)`.
 - `audit_logs` — append-only log of sensitive administrative actions.
 - `system_health` — latest health snapshot per component (`backend` / `indexer`).
+- `administrative_actions` — append-only administrative action idempotency and metadata.
 
 ## On-chain vs. off-chain, at a glance
 

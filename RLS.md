@@ -1,12 +1,19 @@
 # RLS.md — Row Level Security Model
 
+All tables introduced by `0009_schema_production.sql` are enabled for RLS in
+`0010_rls_production.sql`. No policy means deny. Service-role connections used
+by the backend and indexer bypass RLS and must be constrained by their code,
+secret storage, and integration tests.
+
 ## Default posture
 Every table has `ENABLE ROW LEVEL SECURITY`. **No table is readable or
 writable unless an explicit policy grants it.** There is no table-level
 `GRANT ALL` fallback.
 
 ## Roles
-Roles live in `profiles.role` (`user`, `agent`, `reviewer`, `admin`) and are
+Roles live in normalized `roles`, `permissions`, `profile_roles`, and
+`role_permissions` tables. The legacy `profiles.role` field is synchronized
+into that catalog. Roles are
 **assigned server-side only**, via backend logic running with the service
 role or via direct admin action. They are never derived from:
 - JWT custom claims set by the client,

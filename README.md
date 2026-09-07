@@ -1,16 +1,16 @@
 # celoht-supabase
 
-Phase 1 of the CeloHT production infrastructure: the Supabase database
-foundation used by `celoht-backend` and `celoht-indexer`.
+Supabase/PostgreSQL infrastructure used by `celoht-backend` and
+`celoht-indexer`.
 
-This repository contains **schema only** — reproducible SQL migrations, RLS
-policies, storage bucket configuration, and documentation. It intentionally
-contains no application code and no seeded production data.
+This repository contains reproducible SQL migrations, RLS policies, private
+storage configuration, validation, and documentation. It contains no
+application code, production credentials, or fake application data.
 
 ## Contents
 
 ```
-migrations/
+SQL migrations (repository root):
   0001_extensions.sql
   0002_helper_functions.sql
   0003_schema_core.sql        profiles, agents, KYC, education
@@ -19,16 +19,11 @@ migrations/
   0006_rls.sql                Row Level Security for every table
   0007_storage.sql            buckets + storage policies
   0008_seed.sql               intentionally empty — no fake data
-docs/
-  DATABASE.md
-  RLS.md
-  STORAGE.md
-  SECURITY.md
-  AUTHORIZATION.md
-  INDEXER_SCHEMA.md
-  BACKEND_INTEGRATION.md
-  MIGRATIONS.md
-  OWNERSHIP.md
+  0009_schema_production.sql  normalized production entities
+  0010_rls_production.sql     deny-by-default RLS for new entities
+  0011_storage_production.sql private education materials
+
+Documentation is kept at the repository root.
 ```
 
 ## Quick start
@@ -38,7 +33,7 @@ supabase link --project-ref <your-project-ref>
 supabase db push
 ```
 
-See `docs/MIGRATIONS.md` for details and `docs/RLS.md` before granting any
+Run `npm run validate`. See `MIGRATIONS.md` for details and `RLS.md` before granting any
 role access in a real project.
 
 ## Network status
@@ -50,15 +45,16 @@ loaded at runtime by `celoht-indexer` from
 (`42220`) integration fails closed until that repository publishes an
 official Mainnet deployment file.
 
-## Verification status (Phase 1)
+## Verification status
 
-- [x] Migrations apply cleanly to an empty Supabase project.
+- [x] Migrations have deterministic static validation and CI PostgreSQL execution.
 - [x] Every application table has RLS enabled with explicit policies.
 - [x] Sensitive storage buckets (`agent-kyc`, `reforestation-evidence`,
       `certificates`) are private with no public-URL path.
 - [x] `audit_logs` has no update/delete policy for any role.
 - [x] No secrets, private keys, or fake data are present in this repository.
-- [ ] Independent security review (recommended before production use).
+- [ ] Apply and verify against a disposable Supabase project.
+- [ ] Independent security review before production use.
 
 ## Next phases
 
