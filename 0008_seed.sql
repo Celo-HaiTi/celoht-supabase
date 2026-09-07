@@ -1,0 +1,16 @@
+-- 0008_seed.sql
+-- Intentionally contains NO application data.
+--
+-- CeloHT has no authoritative production data at the time of this migration.
+-- Per project policy, this schema must never be seeded with fake users,
+-- fake agents, fake transactions, fake balances, or fake governance results.
+--
+-- indexer_state rows should be inserted by the celoht-indexer's own bootstrap
+-- process, sourced from the official deployment metadata in
+-- Celo-HaiTi/celoht-smart-contracts (e.g. deployedContracts/celoSepolia.json),
+-- never hand-typed here.
+--
+-- Example (run by the indexer bootstrap, not this migration):
+--
+-- insert into public.indexer_state (chain_id, contract_name, contract_address, last_processed_block)
+-- values (11142220, 'CeloHTAgentRegistry', '<address-from-official-deployment-file>', <deploymentBlock>);
