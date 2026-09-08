@@ -15,6 +15,7 @@ Migrations are numbered and must be applied in order:
 10. `0010_rls_production.sql` (RLS for normalized schema)
 11. `0011_storage_production.sql` (private education materials)
 12. `0012_schema_hardening.sql` (reorg history, reconciliation, security events, append-only enforcement)
+13. `0013_auth_challenges.sql` (server-only wallet authentication challenge ledger used by `celoht-backend`)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:

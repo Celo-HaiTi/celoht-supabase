@@ -7,11 +7,10 @@ const requiredTables = [
   'profiles', 'wallet_identities', 'roles', 'permissions', 'profile_roles',
   'agent_profiles', 'agent_verifications', 'agent_activity', 'courses',
   'course_modules', 'lessons', 'enrollments', 'lesson_progress', 'certificates',
-  'reforestation_projects', 'donations', 'tree_records', 'impact_records',
+  'auth_challenges', 'reforestation_projects', 'donations', 'tree_records', 'impact_records',
   'blockchain_networks', 'contracts', 'indexed_blocks', 'indexed_transactions',
   'blockchain_events', 'indexer_sync_state', 'system_health', 'audit_logs',
-  'administrative_actions',
-  'indexer_reconciliation_issues', 'security_events',
+  'administrative_actions', 'indexer_reconciliation_issues', 'security_events',
 ];
 
 for (const table of requiredTables) {
@@ -28,6 +27,12 @@ for (const table of requiredTables) {
 if (!sql.includes('unique (chain_id, transaction_hash, log_index)')) {
   throw new Error('missing blockchain event idempotency constraint');
 }
+if (!sql.includes('public.auth_challenges')) {
+  throw new Error('missing server-only auth_challenges table');
+}
+if (!sql.includes('auth_challenges_deny_all')) {
+  throw new Error('missing deny-all auth_challenges policy');
+}
 if (!sql.includes("values ('education-materials', 'education-materials', false)")) {
   throw new Error('missing private education storage bucket');
 }
@@ -42,6 +47,9 @@ if (!sql.includes('trg_audit_logs_append_only')) {
 }
 if (sql.includes('create policy') && sql.match(/on storage\.objects for select\s+using \(bucket_id = '(agent-kyc|reforestation-evidence)'\s+and auth\.role\(\) = 'anon'/)) {
   throw new Error('sensitive storage policy permits anonymous access');
+}
+if (!sql.includes('used_at') || !sql.includes('expires_at')) {
+  throw new Error('missing auth challenge expiration/consumption fields');
 }
 
 console.log(`Validated ${files.length} SQL migrations and ${requiredTables.length} required tables.`);

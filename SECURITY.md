@@ -42,7 +42,11 @@ secret manager.
   `celoht-indexer` (only ever targets tables documented as INDEXER OWNED or
   SHARED). This must be covered by an integration test in Phase 3.
 - Wallet-based authentication (nonce/challenge/signature) is implemented in
-  `celoht-backend`, not in this repository — this repository only prepares
-  the `profiles` table and Auth linkage it depends on.
+  `celoht-backend`, and this repository now includes the backend-owned server-only
+  `public.auth_challenges` ledger required for signing, expiration, and replay
+  protection.
+- `public.auth_challenges` is intentionally RLS-locked with a deny-all policy and
+  no public or authenticated access. It is writeable only via trusted backend
+  service-role flows, never from browsers or client-side application code.
 - SQL syntax and structural checks run in CI. Disposable Supabase validation
   and independent security review remain required before production use.

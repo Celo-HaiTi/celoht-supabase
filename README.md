@@ -23,6 +23,7 @@ SQL migrations (repository root):
   0010_rls_production.sql     deny-by-default RLS for new entities
   0011_storage_production.sql private education materials
   0012_schema_hardening.sql   reorg, reconciliation, and audit hardening
+  0013_auth_challenges.sql    backend-owned wallet nonce/challenge ledger
 
 Documentation is kept at the repository root.
 ```
