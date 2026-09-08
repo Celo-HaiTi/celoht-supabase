@@ -162,13 +162,13 @@ on conflict (nonce) do nothing;
 
 set role authenticated;
 do $$
-declare
-  visible_rows integer;
 begin
-  select count(*) into visible_rows from public.auth_challenges;
-  if visible_rows <> 0 then
+  begin
+    perform count(*) from public.auth_challenges;
     raise exception 'authenticated users can read auth challenge rows';
-  end if;
+  exception when insufficient_privilege then
+    null;
+  end;
 end;
 $$;
 reset role;
@@ -181,6 +181,19 @@ begin
 exception when unique_violation then
   null;
 end;
+
+set role anon;
+do $$
+begin
+  begin
+    perform count(*) from public.auth_challenges;
+    raise exception 'anonymous users can read auth challenge rows';
+  exception when insufficient_privilege then
+    null;
+  end;
+end;
+$$;
+reset role;
 
 -- expired and consumed challenge states remain invalid for replay
 insert into public.auth_challenges (wallet_address, nonce, expires_at, used_at)
