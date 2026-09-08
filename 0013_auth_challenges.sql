@@ -35,8 +35,16 @@ create index if not exists idx_auth_challenges_created_at
 alter table public.auth_challenges enable row level security;
 
 revoke all on table public.auth_challenges from public;
-revoke all on table public.auth_challenges from anon;
-revoke all on table public.auth_challenges from authenticated;
+
+do $$
+begin
+  if exists (select 1 from pg_roles where rolname = 'anon') then
+    revoke all on table public.auth_challenges from anon;
+  end if;
+  if exists (select 1 from pg_roles where rolname = 'authenticated') then
+    revoke all on table public.auth_challenges from authenticated;
+  end if;
+end $$;
 
 create policy auth_challenges_deny_all
   on public.auth_challenges
