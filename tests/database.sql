@@ -45,7 +45,10 @@ on conflict (id) do nothing;
 
 insert into public.wallet_identities (profile_id, address)
 select id, wallet_address from public.profiles
-where id = '00000000-0000-0000-0000-000000000002'
+where id in (
+  '00000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000002'
+)
 on conflict (address) do nothing;
 
 insert into public.agent_profiles (id, profile_id, wallet_identity_id)
@@ -57,6 +60,23 @@ on conflict (id) do nothing;
 insert into public.agent_verifications (id, agent_profile_id, document_type, document_path)
 values ('20000000-0000-0000-0000-000000000002', '20000000-0000-0000-0000-000000000001', 'passport', 'private/test-document')
 on conflict (id) do nothing;
+
+insert into public.notification_preferences (profile_id)
+values ('00000000-0000-0000-0000-000000000001')
+on conflict (profile_id) do nothing;
+
+insert into public.notifications (
+  id, profile_id, recipient_wallet, notification_type, title, message,
+  deduplication_key, creation_source
+)
+values (
+  '30000000-0000-0000-0000-000000000001',
+  '00000000-0000-0000-0000-000000000001',
+  '0x0000000000000000000000000000000000000001',
+  'wallet_security_alert', 'Isolation notification', 'Private notification fixture',
+  'test:notification:one', 'security'
+)
+on conflict (deduplication_key) do nothing;
 
 set role authenticated;
 select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000001', false);
@@ -80,6 +100,15 @@ begin
   if visible_rows <> 0 then
     raise exception 'administrative data is readable by a normal user';
   end if;
+
+  select count(*) into visible_rows from public.notifications;
+  if visible_rows <> 1 then
+    raise exception 'own notification is not readable';
+  end if;
+
+  update public.notifications
+  set read_at = now()
+  where id = '30000000-0000-0000-0000-000000000001';
 end;
 $$;
 
@@ -90,6 +119,10 @@ where profile_id = '00000000-0000-0000-0000-000000000002';
 reset role;
 do $$
 begin
+  if (select read_at is null from public.notifications where id = '30000000-0000-0000-0000-000000000001') then
+    raise exception 'own notification read state was not updated';
+  end if;
+
   if (select completed from public.course_progress where id = '10000000-0000-0000-0000-000000000004') then
     raise exception 'cross-user course progress was modified';
   end if;

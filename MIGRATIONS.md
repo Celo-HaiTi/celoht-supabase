@@ -16,6 +16,10 @@ Migrations are numbered and must be applied in order:
 11. `0011_storage_production.sql` (private education materials)
 12. `0012_schema_hardening.sql` (reorg history, reconciliation, security events, append-only enforcement)
 13. `0013_auth_challenges.sql` (server-only wallet authentication challenge ledger used by `celoht-backend`)
+14. `0014_notifications.sql` (durable notifications, monitored transactions, announcements, preferences, and push delivery state)
+15. `0015_notifications_rls.sql` (notification access policies and announcement administration permissions)
+16. `0016_auth_predicate_hardening.sql` (remove legacy `auth.role()` authorization predicates)
+17. `0017_indexer_notification_lineage.sql` (durable worker checkpoint metadata and notification event lineage)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:

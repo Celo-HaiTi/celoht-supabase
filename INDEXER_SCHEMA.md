@@ -12,6 +12,10 @@ owns the schema.
 - `blockchain_events` — one decoded row per event log. Idempotency key:
   `(chain_id, transaction_hash, log_index)`.
 - `indexer_sync_state` — one checkpoint per `(chain_id, contract_id)`.
+- `monitored_transactions` — service-owned receipt and confirmation projection
+  for hashes registered by the authenticated backend.
+- `notifications` — service-owned, preference-filtered, idempotent user
+  notifications. Use the globally unique `deduplication_key`.
 
 The earlier tables below remain compatibility tables for existing consumers.
 New indexer work should target the canonical tables above.
@@ -37,7 +41,8 @@ New indexer work should target the canonical tables above.
 `profiles`, `wallet_identities`, `roles`, `permissions`, `agent_verifications`,
 `courses`, `course_modules`, `lessons`, `enrollments`, `lesson_progress`,
 `certificates`, `reforestation_projects`, `tree_records`, `impact_records`,
-`audit_logs`, and `administrative_actions`. These are BACKEND OWNED.
+`audit_logs`, `administrative_actions`, `notification_preferences`,
+`announcements`, and `push_subscriptions`. These are BACKEND OWNED.
 
 ## Contract & network source of truth
 Contract addresses, ABIs, and deployment block numbers must be loaded from

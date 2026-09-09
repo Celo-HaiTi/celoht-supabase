@@ -11,10 +11,20 @@ The backend connects to Supabase using:
 `SUPABASE_SERVICE_ROLE_KEY` must live only in server-side environment
 variables and must never appear in a `NEXT_PUBLIC_*` variable or client bundle.
 
+Notification endpoints and authorization boundaries are specified in
+`NOTIFICATIONS.md`. The backend owns notification creation, preference
+resolution, announcement authorization, and transaction registration; it must
+never accept an arbitrary client recipient as proof of wallet ownership.
+
 ## Tables the backend owns (read/write)
 `profiles`, `agents.off_chain_kyc_status` (+ related fields), `agent_kyc`,
 `courses`, `course_modules`, `lessons`, `course_progress`, `certificates`,
 `reforestation_projects`, `reforestation_evidence`, `audit_logs`.
+
+The backend also owns `notification_preferences`, `announcements`,
+`monitored_transactions`, and `push_subscriptions`. It reads `notifications`
+for authenticated users and uses the service role for trusted creation and
+delivery-state updates.
 
 ## Tables the backend reads but never writes
 `blockchain_transactions`, `agent_transactions`,

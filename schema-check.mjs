@@ -11,6 +11,8 @@ const requiredTables = [
   'blockchain_networks', 'contracts', 'indexed_blocks', 'indexed_transactions',
   'blockchain_events', 'indexer_sync_state', 'system_health', 'audit_logs',
   'administrative_actions', 'indexer_reconciliation_issues', 'security_events',
+  'notification_preferences', 'announcements', 'notifications',
+  'monitored_transactions', 'push_subscriptions', 'notification_delivery_attempts',
 ];
 
 for (const table of requiredTables) {
@@ -50,6 +52,18 @@ if (sql.includes('create policy') && sql.match(/on storage\.objects for select\s
 }
 if (!sql.includes('used_at') || !sql.includes('expires_at')) {
   throw new Error('missing auth challenge expiration/consumption fields');
+}
+if (!sql.includes('notifications_deduplication_unique')) {
+  throw new Error('missing notification idempotency constraint');
+}
+if (!sql.includes('alter table public.notifications enable row level security')) {
+  throw new Error('missing notification RLS enablement');
+}
+if (!sql.includes('last_processed_block') || !sql.includes('worker_identity')) {
+  throw new Error('missing durable worker checkpoint metadata');
+}
+if (!sql.includes('notifications_source_event_idx')) {
+  throw new Error('missing notification event lineage index');
 }
 
 console.log(`Validated ${files.length} SQL migrations and ${requiredTables.length} required tables.`);

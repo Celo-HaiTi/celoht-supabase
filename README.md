@@ -24,6 +24,9 @@ SQL migrations (repository root):
   0011_storage_production.sql private education materials
   0012_schema_hardening.sql   reorg, reconciliation, and audit hardening
   0013_auth_challenges.sql    backend-owned wallet nonce/challenge ledger
+  0014_notifications.sql     durable notification and transaction data layer
+  0015_notifications_rls.sql notification access and admin announcement RLS
+  0016_auth_predicate_hardening.sql legacy auth predicate cleanup
 
 Documentation is kept at the repository root.
 ```
@@ -45,6 +48,11 @@ oswa adapte migration yo nan estrikti `supabase/migrations/` anvan ou kouri
 
 Gade [MIGRATIONS.md](MIGRATIONS.md) pou plis detay epi li [RLS.md](RLS.md)
 anvan ou bay nenpòt aksè role nan yon pwojè reyèl.
+
+Notification infrastructure is represented by the durable database contract in
+`0014`-`0016`. The API, indexer worker, push dispatcher, and deployment runtime
+remain separate repositories (`celoht-backend` and `celoht-indexer`) and are not
+present in this schema-only checkout.
 
 ## Network status
 
@@ -80,6 +88,7 @@ official Mainnet deployment file.
 - [DATA_PROVENANCE.md](DATA_PROVENANCE.md)
 - [BACKUP_RECOVERY.md](BACKUP_RECOVERY.md)
 - [OPERATIONS.md](OPERATIONS.md)
+- [NOTIFICATIONS.md](NOTIFICATIONS.md)
 
 ## Next phases
 
