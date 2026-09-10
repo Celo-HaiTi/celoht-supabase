@@ -48,10 +48,10 @@ jobs:
           create function auth.role() returns text language sql stable as 'select ''anon''::text';
           create function storage.foldername(path text) returns text[] language sql immutable as 'select string_to_array(path, ''/'')';
           SQL
+          psql --host 127.0.0.1 --username postgres --dbname postgres --set ON_ERROR_STOP=1 \
+            --command="create role authenticated; create role anon;"
           for migration in $(find . -maxdepth 1 -name '[0-9]*.sql' -printf '%f\n' | sort); do
             psql --host 127.0.0.1 --username postgres --dbname postgres --set ON_ERROR_STOP=1 --file "$migration"
           done
-          psql --host 127.0.0.1 --username postgres --dbname postgres --set ON_ERROR_STOP=1 \
-            --command="create role authenticated; create role anon;"
           psql --host 127.0.0.1 --username postgres --dbname postgres --set ON_ERROR_STOP=1 \
             --file tests/database.sql
