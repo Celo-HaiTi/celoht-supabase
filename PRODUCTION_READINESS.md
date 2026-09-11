@@ -89,7 +89,7 @@ Not verified in this session:
 ## P1
 
 - Downstream `celoht-backend` and `celoht-indexer` contract verification is still required.
-- The remaining RLS test plan in `README (1).md` should be automated or otherwise formally verified.
+- The remaining RLS test plan in `docs/RLS_TEST_PLAN.md` should be automated or otherwise formally verified.
 - Independent security review remains outstanding.
 
 ## P2

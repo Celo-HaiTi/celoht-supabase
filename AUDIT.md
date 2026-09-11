@@ -47,7 +47,7 @@ The following areas are present but not fully verified in live infrastructure:
 - No live Supabase project has been applied and verified against this repository in this session.
 - No production deployment target, Supabase project reference, or production RPC/configuration was provided or verified here.
 - The repository does not include the downstream `celoht-backend`, `celoht-indexer`, or `celoht-smart-contracts` implementations that consume this schema.
-- The remaining RLS acceptance tests in `README (1).md` are documented as a future test plan, not yet automated as part of the repository’s local test suite.
+- The remaining RLS acceptance tests in `docs/RLS_TEST_PLAN.md` are documented as a future test plan, not yet automated as part of the repository’s local test suite.
 - Operational production deployment, recovery, and live monitoring are described in documentation but not demonstrated here.
 
 ## Mock/Simulated Functionality
@@ -56,7 +56,7 @@ The repository contains intentionally synthetic validation content, but not fake
 
 - `tests/database.sql` uses fixture rows and synthetic wallet addresses to verify policy behavior.
 - `schema-check.mjs` validates presence of required schema features, not live environment behavior.
-- `README (1).md` contains a RLS test plan that is explicitly described as a future test specification.
+- `docs/RLS_TEST_PLAN.md` contains a RLS test plan that is explicitly described as a future test specification.
 
 This is acceptable for a schema foundation repository, but it must not be mistaken for live production data or deployment state.
 
@@ -144,7 +144,7 @@ Documentation gaps remain mainly around:
 
 - Downstream `celoht-backend` and `celoht-indexer` runtime behavior must be validated against this schema in an integration environment.
 - Independent security review remains outstanding.
-- The remaining RLS test plan in `README (1).md` should be automated or otherwise formally verified before claiming full production assurance.
+- The remaining RLS test plan in `docs/RLS_TEST_PLAN.md` should be automated or otherwise formally verified before claiming full production assurance.
 
 ### P2 — Improvement
 

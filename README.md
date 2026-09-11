@@ -28,7 +28,8 @@ SQL migrations (repository root):
   0015_notifications_rls.sql notification access and admin announcement RLS
   0016_auth_predicate_hardening.sql legacy auth predicate cleanup
 
-Documentation is kept at the repository root.
+Core documentation is kept at the repository root. Supporting plans and audit
+artifacts are kept under `docs/`.
 ```
 
 ## Quick start
@@ -89,6 +90,7 @@ official Mainnet deployment file.
 - [BACKUP_RECOVERY.md](BACKUP_RECOVERY.md)
 - [OPERATIONS.md](OPERATIONS.md)
 - [NOTIFICATIONS.md](NOTIFICATIONS.md)
+- [RLS test plan](docs/RLS_TEST_PLAN.md)
 
 ## Next phases
 
