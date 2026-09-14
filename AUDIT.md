@@ -154,6 +154,9 @@ Documentation gaps remain mainly around:
 
 ## Current Status
 
-READY FOR TESTING
+OPERATIONAL — EXTERNAL AUDIT PENDING
 
-This repository is evidence-backed for local schema validation and CI checks, but it is not yet ready for production deployment or production claim without external verification.
+Internal schema implementation, disposable PostgreSQL validation, RLS smoke
+tests, and indexer database contract checks are complete. Managed Supabase
+deployment and backend runtime smoke checks remain environment-specific
+operations outside this schema-only checkout.

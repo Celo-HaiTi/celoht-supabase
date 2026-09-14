@@ -27,6 +27,7 @@ SQL migrations (repository root):
   0014_notifications.sql     durable notification and transaction data layer
   0015_notifications_rls.sql notification access and admin announcement RLS
   0016_auth_predicate_hardening.sql legacy auth predicate cleanup
+  0017_indexer_notification_lineage.sql checkpoint and notification lineage
 
 Core documentation is kept at the repository root. Supporting plans and audit
 artifacts are kept under `docs/`.
@@ -35,7 +36,7 @@ artifacts are kept under `docs/`.
 ## Quick start
 
 Migrations yo nan rasin repo a, se pa nan `supabase/migrations/`. Pou aplike
-yo ak Supabase SQL Editor, kouri fichye SQL yo nan lòd `0001` rive `0012`.
+yo ak Supabase SQL Editor, kouri fichye SQL yo nan lòd `0001` rive `0017`.
 
 Pou verifikasyon lokal:
 

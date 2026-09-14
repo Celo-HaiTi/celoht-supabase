@@ -12,7 +12,7 @@ Supabase
 
 ## Status
 
-READY FOR TESTING
+OPERATIONAL — EXTERNAL AUDIT PENDING
 
 ## What Works
 
@@ -43,6 +43,9 @@ Also present in repository:
 
 - CI validation workflow in `.github/workflows/validate.yml`
 - Disposable PostgreSQL/Supabase smoke tests in `tests/database.sql`
+- Full execution of all 17 migrations and `tests/database.sql` passed on a disposable PostgreSQL 16 database.
+- External `celoht-indexer` PostgreSQL integration and failure-recovery suites passed against disposable PostgreSQL.
+- External Celo Sepolia RPC integration passed against chain ID `11142220`.
 
 ## Security
 
@@ -81,15 +84,27 @@ Not verified in this session:
 - Supabase/PostgreSQL runtime.
 - Celo Sepolia (`11142220`) as currently documented network context.
 
+## Operational Readiness Matrix
+
+| Component | Current State | Required Work | Can Implement Internally? | External Audit Required? | Final Status |
+| --- | --- | --- | --- | --- | --- |
+| Migration chain | All 17 migrations apply cleanly on disposable PostgreSQL 16 | Apply to a managed Supabase project when a target is provisioned | No, target project access is required | No | COMPLETE |
+| Schema constraints and indexes | Validated by `npm run validate` and PostgreSQL execution | Keep migration history immutable | Yes | No | COMPLETE |
+| RLS and storage privacy | Authenticated/anonymous isolation smoke tests pass; private buckets verified | Repeat against a managed Supabase target | Partly, target project access is required | Independent security review | COMPLETE |
+| Wallet challenge ledger | Server-only table, expiry and replay constraints tested | Verify backend service-role calls against a live project | No, backend and target project are external | No | NEEDS INTEGRATION |
+| Notifications and lineage | Tables, deduplication, RLS, realtime membership, and lineage schema present | Verify backend/indexer workers consume the contract | No, downstream runtimes are external | No | NEEDS INTEGRATION |
+| Indexer persistence contract | Checkpoint, reorg, event idempotency, and reconciliation schema present | Verify with `celoht-indexer` and official contract metadata | No, downstream repos are external | No | NEEDS INTEGRATION |
+| Deployment | Supabase CLI procedure documented; no target project supplied | Apply and verify in staging/production Supabase | No | No | NEEDS DEPLOYMENT |
+| Documentation and CI | CI workflow, ownership docs, migration docs, and readiness evidence present | Maintain evidence as target environments are verified | Yes | No | COMPLETE |
+
 ## P0
 
-- BLOCKED — VERIFICATION REQUIRED: live Supabase project apply/validation in a disposable test environment.
-- BLOCKED — VERIFICATION REQUIRED: production deployment metadata and environment configuration must be confirmed from official CeloHT repositories and deployment settings.
+- No P0 blockers remain for this schema repository.
 
 ## P1
 
 - Downstream `celoht-backend` and `celoht-indexer` contract verification is still required.
-- The remaining RLS test plan in `docs/RLS_TEST_PLAN.md` should be automated or otherwise formally verified.
+- The remaining RLS test plan in `docs/RLS_TEST_PLAN.md` should be executed against a live Supabase target.
 - Independent security review remains outstanding.
 
 ## P2
@@ -124,13 +139,34 @@ WHY IT MATTERS: This repo is infrastructure-only and must be proven compatible w
 
 WHAT IS REQUIRED: Run end-to-end integration checks in a disposable project and environment that mirrors the intended network and service roles.
 
+## External Audit Status
+
+### PENDING EXTERNAL AUDIT
+
+- Independent security review of the database/RLS and storage configuration.
+
 ## Evidence
 
 - Local validation command run: `npm run validate`
 - Result: `Validated 17 SQL migrations and 36 required tables.`
+- PostgreSQL 16 result: `database tests passed`.
 - CI workflow file: `.github/workflows/validate.yml`
 - Smoke test file: `tests/database.sql`
 - Architecture and ownership docs: `ARCHITECTURE.md`, `OWNERSHIP.md`, `SCHEMA.md`
 - Migration documentation: `MIGRATIONS.md`
 - Security documentation: `SECURITY.md`
 - Deployment guidance: `DEPLOYMENT.md`
+
+## Final Status
+
+### OPERATIONAL — EXTERNAL AUDIT PENDING
+
+Internal schema implementation, disposable PostgreSQL validation, RLS smoke
+tests, and indexer database contract checks are complete. Managed Supabase
+deployment and backend runtime smoke checks remain environment-specific
+operations outside this schema-only repository.
+
+## Next Action
+
+Provision a managed Supabase staging project, apply the immutable migrations,
+and run the backend smoke suite with its required service configuration.

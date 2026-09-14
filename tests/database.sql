@@ -207,13 +207,17 @@ $$;
 reset role;
 
 -- duplicate nonce is not allowed
+do $$
 begin
-  insert into public.auth_challenges (wallet_address, nonce, expires_at)
-  values ('0x0000000000000000000000000000000000000001', '1111111111111111111111111111111111111111111111111111111111111111', now() + interval '10 minutes');
-  raise exception 'duplicate auth_challenge nonce was accepted';
-exception when unique_violation then
-  null;
+  begin
+    insert into public.auth_challenges (wallet_address, nonce, expires_at)
+    values ('0x0000000000000000000000000000000000000001', '1111111111111111111111111111111111111111111111111111111111111111', now() + interval '10 minutes');
+    raise exception 'duplicate auth_challenge nonce was accepted';
+  exception when unique_violation then
+    null;
+  end;
 end;
+$$;
 
 set role anon;
 do $$
@@ -229,8 +233,8 @@ $$;
 reset role;
 
 -- expired and consumed challenge states remain invalid for replay
-insert into public.auth_challenges (wallet_address, nonce, expires_at, used_at)
-values ('0x0000000000000000000000000000000000000002', '2222222222222222222222222222222222222222222222222222222222222222', now() - interval '1 minute', now() - interval '2 minutes')
-on conflict (nonce) do nothing;
+insert into public.auth_challenges (wallet_address, nonce, expires_at, used_at, created_at)
+values ('0x0000000000000000000000000000000000000002', '2222222222222222222222222222222222222222222222222222222222222222', now() - interval '1 minute', now() - interval '2 minutes', now() - interval '3 minutes')
+  on conflict (nonce) do nothing;
 
 select 'database tests passed' as result;
