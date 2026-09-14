@@ -28,6 +28,7 @@ SQL migrations (repository root):
   0015_notifications_rls.sql notification access and admin announcement RLS
   0016_auth_predicate_hardening.sql legacy auth predicate cleanup
   0017_indexer_notification_lineage.sql checkpoint and notification lineage
+  0018_grants_and_function_security.sql explicit Data API grants and function security
 
 Core documentation is kept at the repository root. Supporting plans and audit
 artifacts are kept under `docs/`.
@@ -35,21 +36,23 @@ artifacts are kept under `docs/`.
 
 ## Quick start
 
-Migrations yo nan rasin repo a, se pa nan `supabase/migrations/`. Pou aplike
-yo ak Supabase SQL Editor, kouri fichye SQL yo nan lòd `0001` rive `0017`.
+The migrations are stored in the repository root, not in
+`supabase/migrations/`. To apply them with the Supabase SQL Editor, run the SQL
+files in order from `0001` through `0018`.
 
-Pou verifikasyon lokal:
+For local verification:
 
 ```bash
 npm run validate
+npm run verify:postgres
 ```
 
-Pou yon pwojè Supabase ki gen CLI/configuration setup, itilize pipeline CI a
-oswa adapte migration yo nan estrikti `supabase/migrations/` anvan ou kouri
+For a Supabase project with CLI/configuration setup, use the CI pipeline or
+adapt the migrations to the `supabase/migrations/` structure before running
 `supabase db push`.
 
-Gade [MIGRATIONS.md](MIGRATIONS.md) pou plis detay epi li [RLS.md](RLS.md)
-anvan ou bay nenpòt aksè role nan yon pwojè reyèl.
+See [MIGRATIONS.md](MIGRATIONS.md) for more details, and read [RLS.md](RLS.md)
+before granting any role access in a real project.
 
 Notification infrastructure is represented by the durable database contract in
 `0014`-`0016`. The API, indexer worker, push dispatcher, and deployment runtime

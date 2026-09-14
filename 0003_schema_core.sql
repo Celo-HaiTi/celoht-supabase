@@ -18,6 +18,7 @@ create table if not exists public.profiles (
   constraint profiles_wallet_address_unique unique (wallet_address)
 );
 
+drop trigger if exists trg_profiles_updated_at on public.profiles;
 create trigger trg_profiles_updated_at
   before update on public.profiles
   for each row execute function public.set_updated_at();
@@ -49,6 +50,7 @@ create table if not exists public.agents (
 create index if not exists idx_agents_wallet_address on public.agents (wallet_address);
 create index if not exists idx_agents_off_chain_status on public.agents (off_chain_kyc_status);
 
+drop trigger if exists trg_agents_updated_at on public.agents;
 create trigger trg_agents_updated_at
   before update on public.agents
   for each row execute function public.set_updated_at();
@@ -91,6 +93,7 @@ create table if not exists public.courses (
   updated_at   timestamptz not null default now()
 );
 
+drop trigger if exists trg_courses_updated_at on public.courses;
 create trigger trg_courses_updated_at
   before update on public.courses
   for each row execute function public.set_updated_at();
@@ -105,6 +108,7 @@ create table if not exists public.course_modules (
   constraint course_modules_unique_order unique (course_id, order_index)
 );
 
+drop trigger if exists trg_course_modules_updated_at on public.course_modules;
 create trigger trg_course_modules_updated_at
   before update on public.course_modules
   for each row execute function public.set_updated_at();
@@ -121,6 +125,7 @@ create table if not exists public.lessons (
   constraint lessons_unique_order unique (module_id, order_index)
 );
 
+drop trigger if exists trg_lessons_updated_at on public.lessons;
 create trigger trg_lessons_updated_at
   before update on public.lessons
   for each row execute function public.set_updated_at();
@@ -138,6 +143,7 @@ create table if not exists public.course_progress (
     check ( (completed = false and completed_at is null) or (completed = true and completed_at is not null) )
 );
 
+drop trigger if exists trg_course_progress_updated_at on public.course_progress;
 create trigger trg_course_progress_updated_at
   before update on public.course_progress
   for each row execute function public.set_updated_at();

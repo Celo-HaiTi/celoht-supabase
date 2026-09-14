@@ -24,7 +24,8 @@ create policy profiles_update_own
 
 create policy profiles_update_admin
   on public.profiles for update
-  using (public.has_role(array['admin']));
+  using (public.has_role(array['admin']))
+  with check (public.has_role(array['admin']));
 
 -- Row creation happens via a backend service-role function tied to Supabase Auth
 -- sign-up, not via direct client inserts.
@@ -48,7 +49,8 @@ create policy agents_insert_own
 
 create policy agents_update_reviewer_admin
   on public.agents for update
-  using (public.has_role(array['reviewer','admin']));
+  using (public.has_role(array['reviewer','admin']))
+  with check (public.has_role(array['reviewer','admin']));
 
 -- Note: on_chain_registry_status is written only by the indexer via service_role,
 -- which bypasses RLS by design (see INDEXER_SCHEMA.md).
@@ -76,7 +78,8 @@ create policy agent_kyc_insert_owner
 
 create policy agent_kyc_update_reviewer_admin
   on public.agent_kyc for update
-  using (public.has_role(array['reviewer','admin']));
+  using (public.has_role(array['reviewer','admin']))
+  with check (public.has_role(array['reviewer','admin']));
 
 -- =========================================================
 -- COURSES / MODULES / LESSONS

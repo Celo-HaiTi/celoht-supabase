@@ -79,24 +79,24 @@ create policy lesson_progress_update_own on public.lesson_progress for update
   with check (exists (select 1 from public.enrollments e where e.id = enrollment_id and e.profile_id = auth.uid()));
 
 create policy blockchain_networks_select_authenticated on public.blockchain_networks for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() is not null);
 create policy contracts_select_authenticated on public.contracts for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() is not null);
 create policy indexed_blocks_select_admin on public.indexed_blocks for select
   using (public.has_role(array['admin']));
 create policy indexed_transactions_select_authenticated on public.indexed_transactions for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() is not null);
 create policy blockchain_events_select_authenticated on public.blockchain_events for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() is not null);
 create policy indexer_sync_state_select_admin on public.indexer_sync_state for select
   using (public.has_role(array['admin']));
 create policy donations_select_authenticated on public.donations for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() is not null);
 
 create policy tree_records_select_authenticated on public.tree_records for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() is not null);
 create policy impact_records_select_authenticated on public.impact_records for select
-  using (auth.role() = 'authenticated');
+  using (auth.uid() is not null);
 
 create policy administrative_actions_select_admin on public.administrative_actions for select
   using (public.has_role(array['admin']));

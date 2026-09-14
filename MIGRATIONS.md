@@ -20,6 +20,7 @@ Migrations are numbered and must be applied in order:
 15. `0015_notifications_rls.sql` (notification access policies and announcement administration permissions)
 16. `0016_auth_predicate_hardening.sql` (remove legacy `auth.role()` authorization predicates)
 17. `0017_indexer_notification_lineage.sql` (durable worker checkpoint metadata and notification event lineage)
+18. `0018_grants_and_function_security.sql` (explicit Data API privileges and SECURITY DEFINER boundaries)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:
@@ -44,6 +45,13 @@ as a new numbered migration file before it is considered part of the schema.
   environment (staging/production). Add a new numbered file instead.
 - Keep each migration focused (schema OR RLS OR storage OR data), matching
   the existing file boundaries, so review stays tractable.
+
+Run the complete local disposable PostgreSQL check with Docker:
+
+```bash
+npm run validate
+npm run verify:postgres
+```
 
 CI applies every migration with `ON_ERROR_STOP=1` and runs
 `tests/database.sql`. A disposable Supabase project remains a required

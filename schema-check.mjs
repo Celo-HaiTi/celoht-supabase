@@ -65,5 +65,14 @@ if (!sql.includes('last_processed_block') || !sql.includes('worker_identity')) {
 if (!sql.includes('notifications_source_event_idx')) {
   throw new Error('missing notification event lineage index');
 }
+if (sql.includes('raw_user_meta_data') || sql.includes('user_metadata')) {
+  throw new Error('authorization must not depend on editable user metadata');
+}
+if (!sql.includes('grant usage on schema public to anon, authenticated')) {
+  throw new Error('missing explicit public schema Data API grant');
+}
+if (!sql.includes('revoke all on table public.auth_challenges from anon, authenticated')) {
+  throw new Error('auth_challenges must remain outside the Data API');
+}
 
 console.log(`Validated ${files.length} SQL migrations and ${requiredTables.length} required tables.`);

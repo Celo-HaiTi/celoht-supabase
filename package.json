@@ -3,7 +3,8 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "validate": "node schema-check.mjs"
+    "validate": "node schema-check.mjs",
+    "verify:postgres": "bash scripts/verify-disposable.sh"
   },
   "engines": {
     "node": ">=20"

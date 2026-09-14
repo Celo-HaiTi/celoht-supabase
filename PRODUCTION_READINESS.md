@@ -12,12 +12,13 @@ Supabase
 
 ## Status
 
-OPERATIONAL — EXTERNAL AUDIT PENDING
+NOT READY — EXTERNAL ENVIRONMENT VERIFICATION PENDING
 
 ## What Works
 
-- Deterministic SQL migration chain from `0001` through `0017`.
+- Deterministic SQL migration chain from `0001` through `0018`.
 - Required tables and RLS enablement checks pass via `npm run validate`.
+- Disposable PostgreSQL execution and RLS/Data API assertions pass via `npm run verify:postgres`.
 - CI workflow exists in `.github/workflows/validate.yml` and runs local validation plus SQL syntax validation on a disposable PostgreSQL instance.
 - Sensitive storage buckets are configured as private.
 - `auth_challenges` is implemented as server-only, deny-by-default infrastructure.
@@ -43,7 +44,7 @@ Also present in repository:
 
 - CI validation workflow in `.github/workflows/validate.yml`
 - Disposable PostgreSQL/Supabase smoke tests in `tests/database.sql`
-- Full execution of all 17 migrations and `tests/database.sql` passed on a disposable PostgreSQL 16 database.
+- Full execution of all 18 migrations and `tests/database.sql` passed on a disposable PostgreSQL 16 database.
 - External `celoht-indexer` PostgreSQL integration and failure-recovery suites passed against disposable PostgreSQL.
 - External Celo Sepolia RPC integration passed against chain ID `11142220`.
 
@@ -159,12 +160,11 @@ WHAT IS REQUIRED: Run end-to-end integration checks in a disposable project and 
 
 ## Final Status
 
-### OPERATIONAL — EXTERNAL AUDIT PENDING
+### NOT READY — EXTERNAL ENVIRONMENT VERIFICATION PENDING
 
-Internal schema implementation, disposable PostgreSQL validation, RLS smoke
-tests, and indexer database contract checks are complete. Managed Supabase
-deployment and backend runtime smoke checks remain environment-specific
-operations outside this schema-only repository.
+Internal schema implementation, disposable PostgreSQL validation, and RLS/Data
+API smoke tests pass. Managed Supabase deployment and backend/indexer/governance
+runtime compatibility remain unverified external dependencies.
 
 ## Next Action
 

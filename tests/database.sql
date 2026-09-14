@@ -206,6 +206,47 @@ end;
 $$;
 reset role;
 
+-- Structural checks complement the behavioral isolation checks above.
+do $$
+declare
+  missing_rls text[];
+begin
+  select array_agg(required_table order by required_table)
+    into missing_rls
+  from unnest(array[
+    'profiles', 'wallet_identities', 'roles', 'permissions', 'profile_roles',
+    'role_permissions', 'agents', 'agent_kyc', 'agent_profiles',
+    'agent_verifications', 'agent_activity', 'courses', 'course_modules',
+    'lessons', 'course_progress', 'certificates', 'enrollments',
+    'lesson_progress', 'blockchain_networks', 'contracts', 'indexed_blocks',
+    'indexed_transactions', 'blockchain_events', 'indexer_sync_state',
+    'donations', 'tree_records', 'impact_records', 'administrative_actions',
+    'audit_logs', 'system_health', 'indexer_reconciliation_issues',
+    'security_events', 'notification_preferences', 'announcements',
+    'notifications', 'monitored_transactions', 'push_subscriptions',
+    'notification_delivery_attempts', 'auth_challenges'
+  ]) as required_table
+  left join pg_class c on c.relname = required_table
+  left join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'public'
+  where c.oid is null or not c.relrowsecurity;
+
+  if missing_rls is not null then
+    raise exception 'tables without RLS: %', missing_rls;
+  end if;
+end;
+$$;
+
+do $$
+begin
+  if has_table_privilege('anon', 'public.auth_challenges', 'select')
+    or has_table_privilege('authenticated', 'public.auth_challenges', 'select')
+    or has_table_privilege('anon', 'public.auth_challenges', 'insert')
+    or has_table_privilege('authenticated', 'public.auth_challenges', 'insert') then
+    raise exception 'auth_challenges has direct Data API privileges';
+  end if;
+end;
+$$;
+
 -- duplicate nonce is not allowed
 do $$
 begin

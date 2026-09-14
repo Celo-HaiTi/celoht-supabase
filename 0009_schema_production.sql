@@ -161,6 +161,7 @@ create unique index if not exists wallet_identities_one_primary
   on public.wallet_identities (profile_id) where is_primary;
 create index if not exists wallet_identities_profile_idx on public.wallet_identities (profile_id);
 
+drop trigger if exists trg_wallet_identities_updated_at on public.wallet_identities;
 create trigger trg_wallet_identities_updated_at
   before update on public.wallet_identities
   for each row execute function public.set_updated_at();
@@ -208,6 +209,7 @@ create table if not exists public.agent_activity (
 create index if not exists agent_verifications_agent_idx on public.agent_verifications (agent_profile_id, submitted_at desc);
 create index if not exists agent_activity_agent_time_idx on public.agent_activity (agent_profile_id, occurred_at desc);
 
+drop trigger if exists trg_agent_profiles_updated_at on public.agent_profiles;
 create trigger trg_agent_profiles_updated_at
   before update on public.agent_profiles
   for each row execute function public.set_updated_at();
@@ -238,6 +240,7 @@ create table if not exists public.lesson_progress (
   )
 );
 
+drop trigger if exists trg_lesson_progress_updated_at on public.lesson_progress;
 create trigger trg_lesson_progress_updated_at
   before update on public.lesson_progress
   for each row execute function public.set_updated_at();
@@ -338,6 +341,7 @@ create table if not exists public.indexer_sync_state (
   constraint indexer_sync_state_block_order check (latest_confirmed_block is null or latest_confirmed_block >= 0)
 );
 
+drop trigger if exists trg_indexer_sync_state_updated_at on public.indexer_sync_state;
 create trigger trg_indexer_sync_state_updated_at
   before update on public.indexer_sync_state
   for each row execute function public.set_updated_at();

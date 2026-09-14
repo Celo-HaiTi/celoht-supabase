@@ -11,7 +11,7 @@ create policy storage_education_materials_select_published
       select 1 from public.courses c
       where c.id::text = (storage.foldername(name))[1]
         and c.status = 'published'
-        and auth.role() = 'authenticated'
+        and auth.uid() is not null
     )
   );
 

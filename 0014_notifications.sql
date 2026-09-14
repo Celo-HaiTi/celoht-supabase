@@ -18,6 +18,7 @@ create table if not exists public.notification_preferences (
   updated_at                  timestamptz not null default now()
 );
 
+drop trigger if exists trg_notification_preferences_updated_at on public.notification_preferences;
 create trigger trg_notification_preferences_updated_at
   before update on public.notification_preferences
   for each row execute function public.set_updated_at();
@@ -59,6 +60,7 @@ create table if not exists public.announcements (
 
 create index if not exists announcements_publication_idx
   on public.announcements (status, publish_at, expires_at);
+drop trigger if exists trg_announcements_updated_at on public.announcements;
 create trigger trg_announcements_updated_at
   before update on public.announcements
   for each row execute function public.set_updated_at();
@@ -120,6 +122,7 @@ create index if not exists notifications_delivery_idx
 create index if not exists notifications_transaction_idx
   on public.notifications (chain_id, transaction_hash)
   where transaction_hash is not null;
+drop trigger if exists trg_notifications_updated_at on public.notifications;
 create trigger trg_notifications_updated_at
   before update on public.notifications
   for each row execute function public.set_updated_at();
@@ -160,6 +163,7 @@ create index if not exists monitored_transactions_pending_idx
   where status in ('pending', 'unknown');
 create index if not exists monitored_transactions_profile_idx
   on public.monitored_transactions (profile_id, submitted_at desc);
+drop trigger if exists trg_monitored_transactions_updated_at on public.monitored_transactions;
 create trigger trg_monitored_transactions_updated_at
   before update on public.monitored_transactions
   for each row execute function public.set_updated_at();
@@ -185,6 +189,7 @@ create table if not exists public.push_subscriptions (
 
 create index if not exists push_subscriptions_profile_idx
   on public.push_subscriptions (profile_id) where disabled_at is null;
+drop trigger if exists trg_push_subscriptions_updated_at on public.push_subscriptions;
 create trigger trg_push_subscriptions_updated_at
   before update on public.push_subscriptions
   for each row execute function public.set_updated_at();
@@ -206,6 +211,7 @@ create table if not exists public.notification_delivery_attempts (
 create index if not exists notification_delivery_retry_idx
   on public.notification_delivery_attempts (status, next_attempt_at)
   where status in ('pending', 'retrying');
+drop trigger if exists trg_notification_delivery_attempts_updated_at on public.notification_delivery_attempts;
 create trigger trg_notification_delivery_attempts_updated_at
   before update on public.notification_delivery_attempts
   for each row execute function public.set_updated_at();

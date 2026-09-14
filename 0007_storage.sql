@@ -101,6 +101,10 @@ create policy storage_user_media_update_owner
   using (
     bucket_id = 'user-media'
     and (storage.foldername(name))[1] = auth.uid()::text
+  )
+  with check (
+    bucket_id = 'user-media'
+    and (storage.foldername(name))[1] = auth.uid()::text
   );
 
 create policy storage_user_media_delete_owner

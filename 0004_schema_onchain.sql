@@ -68,6 +68,7 @@ create table if not exists public.reforestation_projects (
   updated_at   timestamptz not null default now()
 );
 
+drop trigger if exists trg_reforestation_projects_updated_at on public.reforestation_projects;
 create trigger trg_reforestation_projects_updated_at
   before update on public.reforestation_projects
   for each row execute function public.set_updated_at();
@@ -112,6 +113,7 @@ create table if not exists public.reforestation_evidence (
     check ( (status <> 'verified') or (verified_by is not null and verified_at is not null) )
 );
 
+drop trigger if exists trg_reforestation_evidence_updated_at on public.reforestation_evidence;
 create trigger trg_reforestation_evidence_updated_at
   before update on public.reforestation_evidence
   for each row execute function public.set_updated_at();
@@ -135,6 +137,7 @@ create table if not exists public.governance_proposals (
   constraint governance_proposals_onchain_id_unique unique (on_chain_proposal_id)
 );
 
+drop trigger if exists trg_governance_proposals_updated_at on public.governance_proposals;
 create trigger trg_governance_proposals_updated_at
   before update on public.governance_proposals
   for each row execute function public.set_updated_at();
@@ -176,6 +179,7 @@ create table if not exists public.indexer_state (
   constraint indexer_state_unique unique (chain_id, contract_address)
 );
 
+drop trigger if exists trg_indexer_state_updated_at on public.indexer_state;
 create trigger trg_indexer_state_updated_at
   before update on public.indexer_state
   for each row execute function public.set_updated_at();

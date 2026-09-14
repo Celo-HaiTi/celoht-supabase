@@ -9,24 +9,34 @@ alter table public.indexer_sync_state
   add column if not exists worker_identity text,
   add column if not exists worker_version text;
 
-alter table public.indexer_sync_state
-  add constraint indexer_sync_state_processed_block_nonnegative
-    check (last_processed_block >= 0);
-alter table public.indexer_sync_state
-  add constraint indexer_sync_state_safe_block_order
-    check (safe_block is null or safe_block <= last_processed_block);
-alter table public.indexer_sync_state
-  add constraint indexer_sync_state_block_hash_format
-    check (last_processed_block_hash is null or last_processed_block_hash ~* '^0x[0-9a-f]{64}$');
-alter table public.indexer_sync_state
-  add constraint indexer_sync_state_parent_hash_format
-    check (last_processed_parent_hash is null or last_processed_parent_hash ~* '^0x[0-9a-f]{64}$');
-alter table public.indexer_sync_state
-  add constraint indexer_sync_state_worker_identity_nonempty
-    check (worker_identity is null or length(btrim(worker_identity)) between 1 and 200);
-alter table public.indexer_sync_state
-  add constraint indexer_sync_state_worker_version_nonempty
-    check (worker_version is null or length(btrim(worker_version)) between 1 and 100);
+do $$
+begin
+  if not exists (select 1 from pg_constraint where conname = 'indexer_sync_state_processed_block_nonnegative') then
+    alter table public.indexer_sync_state add constraint indexer_sync_state_processed_block_nonnegative
+      check (last_processed_block >= 0);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'indexer_sync_state_safe_block_order') then
+    alter table public.indexer_sync_state add constraint indexer_sync_state_safe_block_order
+      check (safe_block is null or safe_block <= last_processed_block);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'indexer_sync_state_block_hash_format') then
+    alter table public.indexer_sync_state add constraint indexer_sync_state_block_hash_format
+      check (last_processed_block_hash is null or last_processed_block_hash ~* '^0x[0-9a-f]{64}$');
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'indexer_sync_state_parent_hash_format') then
+    alter table public.indexer_sync_state add constraint indexer_sync_state_parent_hash_format
+      check (last_processed_parent_hash is null or last_processed_parent_hash ~* '^0x[0-9a-f]{64}$');
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'indexer_sync_state_worker_identity_nonempty') then
+    alter table public.indexer_sync_state add constraint indexer_sync_state_worker_identity_nonempty
+      check (worker_identity is null or length(btrim(worker_identity)) between 1 and 200);
+  end if;
+  if not exists (select 1 from pg_constraint where conname = 'indexer_sync_state_worker_version_nonempty') then
+    alter table public.indexer_sync_state add constraint indexer_sync_state_worker_version_nonempty
+      check (worker_version is null or length(btrim(worker_version)) between 1 and 100);
+  end if;
+end;
+$$;
 
 create index if not exists indexer_sync_state_health_idx
   on public.indexer_sync_state (status, updated_at desc);
