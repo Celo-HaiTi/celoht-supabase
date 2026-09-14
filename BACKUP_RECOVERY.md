@@ -4,6 +4,15 @@ Use Supabase point-in-time recovery or encrypted PostgreSQL backups according
 to the project retention policy. Test restoration into a disposable project
 before relying on a backup for production recovery.
 
+## Verification evidence
+
+- Disposable PostgreSQL backup and restore: VERIFIED LOCALLY on 2026-09-14.
+- The 20-migration schema was dumped with `pg_dump`, restored into a fresh
+   database with `pg_restore`, and checked for 47 public tables, 47 RLS-enabled
+   tables, and preserved representative blockchain network state.
+- Supabase PITR, managed-project restore, indexer restart, and live chain reorg
+   recovery: NOT TESTED / BLOCKED.
+
 Recovery order:
 
 1. Restore the database and verify migration state, RLS, private buckets, and

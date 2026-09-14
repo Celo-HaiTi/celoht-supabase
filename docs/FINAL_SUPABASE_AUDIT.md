@@ -2,12 +2,12 @@
 
 ## Result
 
-PRODUCTION READY
+NOT READY — EXTERNAL VERIFICATION BLOCKED
 
 ## Scope reviewed
 
-- Migration sequence from 0001 through 0013
-- Backend challenge contract in Celo-HaiTi/celoht-backend
+- Migration sequence from 0001 through 0019
+- Backend challenge contract as documented in this repository
 - Ownership boundaries across backend, indexer, governance, admin, and dapp
 - RLS, storage, permissions, audit immutability, and security hardening
 - Reproducibility of migration application against a clean database
@@ -28,4 +28,8 @@ PRODUCTION READY
 
 ## Remaining operational caveat
 
-This repository is production-ready only as a database layer contract. It is not a substitute for deployment validation against a live Supabase project and a live backend/indexer runtime. Those checks remain required prior to a real production launch, but no blocker exists in the schema itself for the reviewed requirements.
+This repository is not production-ready as a deployed system. Local static and
+disposable PostgreSQL checks pass, but live Supabase deployment, Security
+Advisor results, backend/indexer integration, recovery staging, official ABI
+verification, and independent security audit evidence are unavailable in this
+workspace.

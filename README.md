@@ -29,6 +29,8 @@ SQL migrations (repository root):
   0016_auth_predicate_hardening.sql legacy auth predicate cleanup
   0017_indexer_notification_lineage.sql checkpoint and notification lineage
   0018_grants_and_function_security.sql explicit Data API grants and function security
+  0019_client_privilege_hardening.sql revoke client writes to server-owned tables
+  0020_indexer_contract_compatibility.sql indexer checkpoint RPC and transaction index
 
 Core documentation is kept at the repository root. Supporting plans and audit
 artifacts are kept under `docs/`.
@@ -38,7 +40,7 @@ artifacts are kept under `docs/`.
 
 The migrations are stored in the repository root, not in
 `supabase/migrations/`. To apply them with the Supabase SQL Editor, run the SQL
-files in order from `0001` through `0018`.
+files in order from `0001` through `0020`.
 
 For local verification:
 
@@ -78,6 +80,8 @@ official Mainnet deployment file.
 - [x] No secrets, private keys, or fake data are present in this repository.
 - [ ] Apply and verify against a disposable Supabase project.
 - [ ] Independent security review before production use.
+- [ ] Verify current backend/indexer source against a real Supabase staging project.
+- [ ] Verify official Sepolia deployment metadata and ABI at runtime.
 
 ## Documentation
 

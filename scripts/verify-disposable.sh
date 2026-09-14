@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+script_dir=$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)
+repo_root=$(cd "$script_dir/.." && pwd)
+cd "$repo_root"
+
 container_name="celoht-supabase-verify-$$"
 cleanup() {
   docker rm -f "$container_name" >/dev/null 2>&1 || true

@@ -278,4 +278,72 @@ insert into public.auth_challenges (wallet_address, nonce, expires_at, used_at, 
 values ('0x0000000000000000000000000000000000000002', '2222222222222222222222222222222222222222222222222222222222222222', now() - interval '1 minute', now() - interval '2 minutes', now() - interval '3 minutes')
   on conflict (nonce) do nothing;
 
+-- Additional ownership and client privilege assertions.
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000001', false);
+
+do $$
+declare
+  visible_rows integer;
+begin
+  select count(*) into visible_rows from public.profiles;
+  if visible_rows <> 1 then
+    raise exception 'profile cross-user isolation failed';
+  end if;
+
+  begin
+    update public.profiles set role = 'admin'
+    where id = '00000000-0000-0000-0000-000000000001';
+    raise exception 'profile role escalation was accepted';
+  exception when insufficient_privilege or check_violation then
+    null;
+  end;
+
+  begin
+    insert into public.indexed_blocks (chain_id, block_number, block_hash)
+    values (11142220, 900, '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa');
+    raise exception 'authenticated client wrote an indexer-owned table';
+  exception when insufficient_privilege then
+    null;
+  end;
+end;
+$$;
+reset role;
+
+do $$
+begin
+  begin
+    insert into public.notifications (
+      profile_id, recipient_wallet, notification_type, title, message,
+      deduplication_key, creation_source
+    ) values (
+      '00000000-0000-0000-0000-000000000001',
+      '0x0000000000000000000000000000000000000001',
+      'wallet_security_alert', 'Duplicate notification', 'Duplicate fixture',
+      'test:notification:one', 'security'
+    );
+    raise exception 'duplicate notification was accepted';
+  exception when unique_violation then
+    null;
+  end;
+end;
+$$;
+
+insert into public.indexed_blocks (chain_id, block_number, block_hash, confirmation_status)
+values (11142220, 900, '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa', 'canonical');
+insert into public.indexed_blocks (chain_id, block_number, block_hash, confirmation_status)
+values (11142220, 900, '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb', 'orphaned');
+
+do $$
+begin
+  begin
+    insert into public.indexed_blocks (chain_id, block_number, block_hash, confirmation_status)
+    values (11142220, 900, '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc', 'confirmed');
+    raise exception 'multiple canonical blocks at one height were accepted';
+  exception when unique_violation then
+    null;
+  end;
+end;
+$$;
+
 select 'database tests passed' as result;

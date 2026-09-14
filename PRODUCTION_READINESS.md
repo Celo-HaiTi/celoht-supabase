@@ -16,9 +16,9 @@ NOT READY — EXTERNAL ENVIRONMENT VERIFICATION PENDING
 
 ## What Works
 
-- Deterministic SQL migration chain from `0001` through `0018`.
+- Deterministic SQL migration chain from `0001` through `0020`.
 - Required tables and RLS enablement checks pass via `npm run validate`.
-- Disposable PostgreSQL execution and RLS/Data API assertions pass via `npm run verify:postgres`.
+- Disposable PostgreSQL execution and RLS/Data API assertions are implemented in `npm run verify:postgres`; execution remains environment-dependent.
 - CI workflow exists in `.github/workflows/validate.yml` and runs local validation plus SQL syntax validation on a disposable PostgreSQL instance.
 - Sensitive storage buckets are configured as private.
 - `auth_challenges` is implemented as server-only, deny-by-default infrastructure.
@@ -38,15 +38,16 @@ Executed locally:
 
 Result:
 
-- `Validated 17 SQL migrations and 36 required tables.`
+- `Validated 20 SQL migrations and 36 required tables.`
 
 Also present in repository:
 
 - CI validation workflow in `.github/workflows/validate.yml`
 - Disposable PostgreSQL/Supabase smoke tests in `tests/database.sql`
-- Full execution of all 18 migrations and `tests/database.sql` passed on a disposable PostgreSQL 16 database.
-- External `celoht-indexer` PostgreSQL integration and failure-recovery suites passed against disposable PostgreSQL.
-- External Celo Sepolia RPC integration passed against chain ID `11142220`.
+- Full execution of all 20 migrations and `tests/database.sql` passed on disposable PostgreSQL 16 in this session.
+- Indexer typecheck and 21 unit tests passed; backend typecheck and 24 unit tests passed in shallow audit clones.
+- Backend/indexer staging integration remains blocked by the schema conflict documented in `docs/COMPATIBILITY_MATRIX.md`.
+- Celo Sepolia RPC chain ID and deployed bytecode checks passed; full ABI-to-bytecode verification was not completed.
 
 ## Security
 
@@ -89,14 +90,14 @@ Not verified in this session:
 
 | Component | Current State | Required Work | Can Implement Internally? | External Audit Required? | Final Status |
 | --- | --- | --- | --- | --- | --- |
-| Migration chain | All 17 migrations apply cleanly on disposable PostgreSQL 16 | Apply to a managed Supabase project when a target is provisioned | No, target project access is required | No | COMPLETE |
-| Schema constraints and indexes | Validated by `npm run validate` and PostgreSQL execution | Keep migration history immutable | Yes | No | COMPLETE |
-| RLS and storage privacy | Authenticated/anonymous isolation smoke tests pass; private buckets verified | Repeat against a managed Supabase target | Partly, target project access is required | Independent security review | COMPLETE |
+| Migration chain | All 20 migrations apply cleanly on disposable PostgreSQL 16 | Apply to a managed Supabase project when a target is provisioned | No, target project access is required | No | PARTIALLY VERIFIED |
+| Schema constraints and indexes | Validated by `npm run validate` and disposable PostgreSQL execution | Keep migration history immutable | Yes | No | VERIFIED LOCALLY |
+| RLS and storage privacy | Local smoke tests pass; complete staging matrix is not executed | Repeat against a managed Supabase target | Partly, target project access is required | Independent security review | PARTIALLY VERIFIED |
 | Wallet challenge ledger | Server-only table, expiry and replay constraints tested | Verify backend service-role calls against a live project | No, backend and target project are external | No | NEEDS INTEGRATION |
 | Notifications and lineage | Tables, deduplication, RLS, realtime membership, and lineage schema present | Verify backend/indexer workers consume the contract | No, downstream runtimes are external | No | NEEDS INTEGRATION |
 | Indexer persistence contract | Checkpoint, reorg, event idempotency, and reconciliation schema present | Verify with `celoht-indexer` and official contract metadata | No, downstream repos are external | No | NEEDS INTEGRATION |
 | Deployment | Supabase CLI procedure documented; no target project supplied | Apply and verify in staging/production Supabase | No | No | NEEDS DEPLOYMENT |
-| Documentation and CI | CI workflow, ownership docs, migration docs, and readiness evidence present | Maintain evidence as target environments are verified | Yes | No | COMPLETE |
+| Documentation and CI | CI workflow, ownership docs, migration docs, and readiness evidence present | Maintain evidence as target environments are verified | Yes | No | VERIFIED LOCALLY |
 
 ## P0
 
@@ -149,8 +150,8 @@ WHAT IS REQUIRED: Run end-to-end integration checks in a disposable project and 
 ## Evidence
 
 - Local validation command run: `npm run validate`
-- Result: `Validated 17 SQL migrations and 36 required tables.`
-- PostgreSQL 16 result: `database tests passed`.
+- Result: `Validated 20 SQL migrations and 36 required tables.`
+- PostgreSQL 16 result: `database tests passed`; `Disposable PostgreSQL verification passed.`
 - CI workflow file: `.github/workflows/validate.yml`
 - Smoke test file: `tests/database.sql`
 - Architecture and ownership docs: `ARCHITECTURE.md`, `OWNERSHIP.md`, `SCHEMA.md`
@@ -162,9 +163,9 @@ WHAT IS REQUIRED: Run end-to-end integration checks in a disposable project and 
 
 ### NOT READY — EXTERNAL ENVIRONMENT VERIFICATION PENDING
 
-Internal schema implementation, disposable PostgreSQL validation, and RLS/Data
-API smoke tests pass. Managed Supabase deployment and backend/indexer/governance
-runtime compatibility remain unverified external dependencies.
+Internal static validation passes. Disposable PostgreSQL execution, managed
+Supabase deployment, and backend/indexer/governance runtime compatibility
+remain unverified external dependencies.
 
 ## Next Action
 

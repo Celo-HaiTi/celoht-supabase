@@ -21,6 +21,8 @@ Migrations are numbered and must be applied in order:
 16. `0016_auth_predicate_hardening.sql` (remove legacy `auth.role()` authorization predicates)
 17. `0017_indexer_notification_lineage.sql` (durable worker checkpoint metadata and notification event lineage)
 18. `0018_grants_and_function_security.sql` (explicit Data API privileges and SECURITY DEFINER boundaries)
+19. `0019_client_privilege_hardening.sql` (remove client writes to server-owned tables)
+20. `0020_indexer_contract_compatibility.sql` (checkpoint RPC and transaction index compatibility)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:

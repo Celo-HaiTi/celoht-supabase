@@ -20,8 +20,7 @@ for (const table of requiredTables) {
 }
 
 for (const table of requiredTables) {
-  if (!sql.includes(`alter table public.${table} enable row level security`)
-    && !['profiles', 'courses', 'course_modules', 'lessons', 'certificates', 'reforestation_projects', 'system_health', 'audit_logs'].includes(table)) {
+  if (!sql.includes(`alter table public.${table} enable row level security`)) {
     throw new Error(`missing RLS enablement: ${table}`);
   }
 }
@@ -73,6 +72,15 @@ if (!sql.includes('grant usage on schema public to anon, authenticated')) {
 }
 if (!sql.includes('revoke all on table public.auth_challenges from anon, authenticated')) {
   throw new Error('auth_challenges must remain outside the Data API');
+}
+if (!files.includes('0019_client_privilege_hardening.sql')) {
+  throw new Error('missing post-0018 client privilege hardening migration');
+}
+if (!files.includes('0020_indexer_contract_compatibility.sql')) {
+  throw new Error('missing indexer compatibility migration');
+}
+if (!sql.includes('commit_indexer_checkpoint')) {
+  throw new Error('missing atomic indexer checkpoint function');
 }
 
 console.log(`Validated ${files.length} SQL migrations and ${requiredTables.length} required tables.`);

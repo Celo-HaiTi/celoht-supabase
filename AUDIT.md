@@ -28,7 +28,7 @@ Key architectural points:
 
 The repository already contains a substantial and well-structured migration set:
 
-- `0001_extensions.sql` through `0017_indexer_notification_lineage.sql` provide a complete migration chain.
+- `0001_extensions.sql` through `0020_indexer_contract_compatibility.sql` provide the current migration chain.
 - `0003_schema_core.sql` and `0009_schema_production.sql` establish normalized production entities.
 - `0006_rls.sql`, `0010_rls_production.sql`, and `0015_notifications_rls.sql` define access control.
 - `0007_storage.sql` and `0011_storage_production.sql` define private storage buckets for sensitive documents.
@@ -46,7 +46,7 @@ The following areas are present but not fully verified in live infrastructure:
 
 - No live Supabase project has been applied and verified against this repository in this session.
 - No production deployment target, Supabase project reference, or production RPC/configuration was provided or verified here.
-- The repository does not include the downstream `celoht-backend`, `celoht-indexer`, or `celoht-smart-contracts` implementations that consume this schema.
+- The repository does not include the downstream implementations that consume this schema; public shallow audit copies were inspected outside the workspace.
 - The remaining RLS acceptance tests in `docs/RLS_TEST_PLAN.md` are documented as a future test plan, not yet automated as part of the repository’s local test suite.
 - Operational production deployment, recovery, and live monitoring are described in documentation but not demonstrated here.
 
@@ -138,7 +138,7 @@ Documentation gaps remain mainly around:
 ### P0 — Critical production blocker
 
 - Live Supabase project verification is still required before production use. The repository has local validation, but not a verified production project application.
-- Production contract deployment metadata and environment variables must be verified from the official `celoht-smart-contracts` repository and target deployment environment.
+- Current public Sepolia deployment metadata and ABI artifacts were inspected, but runtime indexer/schema compatibility and target environment configuration remain unverified.
 
 ### P1 — Important production issue
 
@@ -156,7 +156,6 @@ Documentation gaps remain mainly around:
 
 OPERATIONAL — EXTERNAL AUDIT PENDING
 
-Internal schema implementation, disposable PostgreSQL validation, RLS smoke
-tests, and indexer database contract checks are complete. Managed Supabase
-deployment and backend runtime smoke checks remain environment-specific
-operations outside this schema-only checkout.
+Internal static validation is complete. Disposable PostgreSQL execution,
+managed Supabase deployment, and backend/indexer runtime smoke checks remain
+unverified until the required runtime environments are available.
