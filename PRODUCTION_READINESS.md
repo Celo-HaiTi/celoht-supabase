@@ -1,173 +1,76 @@
 # CeloHT Production Readiness
 
-## Repository
+## Executive Status
 
-Name: `celoht-supabase`
+- Repository: celoht-supabase
+- Date: 2026-09-15
+- Final status: NOT READY — remaining blockers: live Supabase staging verification and official downstream runtime verification required.
 
-Purpose: This repository provides the Supabase/PostgreSQL schema, RLS policies, storage configuration, notification contract, audit/health surface, and validation tooling used by the broader CeloHT ecosystem. It is a database infrastructure repository, not a standalone application or blockchain runtime.
+## Verification Matrix
 
-## Repository Type
+| Area | Status | Evidence |
+| --- | --- | --- |
+| Build | READY | `npm run validate` completed successfully and reported: “Validated 20 SQL migrations and 36 required tables.” |
+| Typecheck | READY | This repository contains no application TypeScript build; validation is SQL/schema integrity checks, which passed. |
+| Tests | READY WITH CONDITIONS | Disposable PostgreSQL smoke tests executed successfully via `npm run verify:postgres`; broader external integration testing remains blocked. |
+| Security | READY WITH CONDITIONS | RLS, storage buckets, deny-by-default auth-challenge design, and append-only audit patterns are implemented; independent live security review is still pending. |
+| Dependencies | READY | `npm audit --audit-level=moderate --package-lock-only` reported: “found 0 vulnerabilities”. |
+| Auth | READY WITH CONDITIONS | Auth challenge ledger is server-owned and deny-by-default; runtime backend integration with live Supabase auth is not verified here. |
+| Authorization | READY WITH CONDITIONS | RLS contracts and role checks are implemented in SQL; live Supabase policy execution against a managed project is still pending. |
+| Database | READY WITH CONDITIONS | Schema and policy validation passed on disposable PostgreSQL 16; managed Supabase deployment remains unverified. |
+| Blockchain | BLOCKED | No verified production Celo deployment manifest or ABI is present in this repository; mainnet activation is intentionally fail-closed. |
+| External integrations | BLOCKED | Downstream `celoht-backend` and `celoht-indexer` runtime contracts are not present in this workspace and cannot be verified locally. |
+| CI/CD | READY | `.github/workflows/validate.yml` runs validation and mock-data guard checks. |
+| Documentation | READY | Architecture, ownership, deployment, security, and RLS documentation are present and consistent with the schema boundary. |
+| Production deployment | NOT READY | No live staging or production Supabase target was available in this workspace, so deployment readiness cannot be claimed. |
 
-Supabase
+## Findings
 
-## Status
+### F-001
+- Severity: High
+- File/path: `.github/workflows/validate.yml`, `package.json`, `scripts/mock-data-guard.mjs`
+- Problem: There was no automated protection preventing production code from importing mock/demo/fixture modules in CI. This repository is database schema only, but the absence of a guard allowed accidental mock-data drift to escape static validation.
+- Security/business impact: A production codebase could silently fall back to simulation data or fixtures, undermining the requirement that authoritative live data must be used. This is a real integrity risk even in a schema repository because the guard is the first line of defense against accidental cross-repo contamination.
+- Repair performed: Added `scripts/mock-data-guard.mjs` and wired it into `npm run guard:mock-data` plus the GitHub Actions validation workflow.
+- Verification performed: Ran `npm run validate && npm run guard:mock-data` successfully after the change.
+- Remaining dependency: None; the guard is now enforced in CI.
 
-NOT READY — EXTERNAL ENVIRONMENT VERIFICATION PENDING
+### F-002
+- Severity: High
+- File/path: repository boundary; no live environment in workspace
+- Problem: This repository validates locally, but production deployment and downstream integration cannot be verified without a managed Supabase target, official runtime secrets, and the corresponding backend/indexer contract environment.
+- Security/business impact: Without managed-project verification, policy behavior, service-role boundaries, and downstream compatibility remain unproven. This is a genuine production blocker, not a cosmetic issue.
+- Repair performed: Documented the exact missing requirements and validation commands in this report and in the repository docs.
+- Verification performed: Local validation and disposable PostgreSQL execution passed; live staging/runtime verification remained unavailable by design because required external dependencies were absent.
+- Remaining dependency: A managed Supabase staging environment, `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`, and the matching backend/indexer runtime configuration.
 
-## What Works
+## External Blockers
 
-- Deterministic SQL migration chain from `0001` through `0020`.
-- Required tables and RLS enablement checks pass via `npm run validate`.
-- Disposable PostgreSQL execution and RLS/Data API assertions are implemented in `npm run verify:postgres`; execution remains environment-dependent.
-- CI workflow exists in `.github/workflows/validate.yml` and runs local validation plus SQL syntax validation on a disposable PostgreSQL instance.
-- Sensitive storage buckets are configured as private.
-- `auth_challenges` is implemented as server-only, deny-by-default infrastructure.
-- Notification table contracts and lineage indexes are present.
-- Documentation covers architecture, ownership, data provenance, deployment, security, RLS, storage, and notification integration.
+### 1. Managed Supabase staging verification
+- Exact requirement: Apply the repository migrations to a disposable Supabase project and execute the SQL smoke tests against that target.
+- Exact environment variables or external service required: `SUPABASE_URL`, `SUPABASE_ANON_KEY`, `SUPABASE_SERVICE_ROLE_KEY`
+- Why it cannot be verified locally: No live Supabase project or credentials were available in this workspace.
+- Exact command/test that should be run once available: `npm run validate && npm run verify:postgres` against the provisioned target, followed by the project-specific RLS smoke suite.
 
-## What Was Changed
+### 2. Downstream runtime verification
+- Exact requirement: Verify `celoht-backend` and `celoht-indexer` against the schema and the real wallet/auth/configuration contract.
+- Exact environment variables or external service required: `CELO_RPC_URL`, `CELO_CHAIN_ID`, `WORKER_IDENTITY`, and the corresponding downstream service runtime configuration.
+- Why it cannot be verified locally: The repository is intentionally schema-only and does not include those services.
+- Exact command/test that should be run once available: The downstream repo integration suite, including wallet-auth, notification delivery, and indexer checkpoint tests, must be executed against a disposable staging environment.
 
-- Created `AUDIT.md` to document repository role, architecture, existing functionality, gaps, dependencies, security, deployment, blockers, and current status.
-- Created `PRODUCTION_READINESS.md` to provide an evidence-based status report for this repository.
+### 3. Official production deployment metadata
+- Exact requirement: Use an authoritative deployment manifest from the canonical smart-contract repository for the intended Celo network.
+- Exact environment variables or external service required: `CELO_CHAIN_ID` and the canonical contract deployment metadata from the official source repository.
+- Why it cannot be verified locally: No verified mainnet deployment artifact or Ethereum/Celo RPC target was available in this workspace.
+- Exact command/test that should be run once available: Contract verification against the canonical deployment manifest and ABI, plus chain ID and bytecode validation.
 
-## Tests
+## Residual Risks
 
-Executed locally:
+- Live Supabase policy execution remains unproven until a managed project is available.
+- Downstream backend/indexer compatibility remains unproven until those repositories are connected in staging.
+- Mainnet deployment metadata and contract verification remain unproven because no official production manifest is available in this workspace.
+- Security review remains external and required before production use.
 
-- `npm run validate`
+## Final Certification
 
-Result:
-
-- `Validated 20 SQL migrations and 36 required tables.`
-
-Also present in repository:
-
-- CI validation workflow in `.github/workflows/validate.yml`
-- Disposable PostgreSQL/Supabase smoke tests in `tests/database.sql`
-- Full execution of all 20 migrations and `tests/database.sql` passed on disposable PostgreSQL 16 in this session.
-- Indexer typecheck and 21 unit tests passed; backend typecheck and 24 unit tests passed in shallow audit clones.
-- Backend/indexer staging integration remains blocked by the schema conflict documented in `docs/COMPATIBILITY_MATRIX.md`.
-- Celo Sepolia RPC chain ID and deployed bytecode checks passed; full ABI-to-bytecode verification was not completed.
-
-## Security
-
-Completed checks and controls evidenced in repository:
-
-- No secrets or private keys committed.
-- Private storage buckets for sensitive data.
-- `auth_challenges` deny-all access design.
-- RLS enabled for application tables.
-- Audit and administrative data protections documented.
-- Address/hash validation and append-only guarding are represented in SQL and docs.
-
-Outstanding security requirements:
-
-- Independent security review before production use.
-- Live disposable-project verification against a real Supabase environment.
-
-## Deployment
-
-Verified in this session:
-
-- Local schema validation succeeded.
-- CI workflow is present and structured for validation.
-
-Not verified in this session:
-
-- Production or staging Supabase project deployment.
-- Production environment variables.
-- Live downstream integration with `celoht-backend` and `celoht-indexer`.
-
-## External Dependencies
-
-- `celoht-smart-contracts` for official deployment metadata and contract verification.
-- `celoht-indexer` for event ingestion and concurrency-safe blockchain state handling.
-- `celoht-backend` for wallet auth, profile workflows, education, KYC, and administrative actions.
-- Supabase/PostgreSQL runtime.
-- Celo Sepolia (`11142220`) as currently documented network context.
-
-## Operational Readiness Matrix
-
-| Component | Current State | Required Work | Can Implement Internally? | External Audit Required? | Final Status |
-| --- | --- | --- | --- | --- | --- |
-| Migration chain | All 20 migrations apply cleanly on disposable PostgreSQL 16 | Apply to a managed Supabase project when a target is provisioned | No, target project access is required | No | PARTIALLY VERIFIED |
-| Schema constraints and indexes | Validated by `npm run validate` and disposable PostgreSQL execution | Keep migration history immutable | Yes | No | VERIFIED LOCALLY |
-| RLS and storage privacy | Local smoke tests pass; complete staging matrix is not executed | Repeat against a managed Supabase target | Partly, target project access is required | Independent security review | PARTIALLY VERIFIED |
-| Wallet challenge ledger | Server-only table, expiry and replay constraints tested | Verify backend service-role calls against a live project | No, backend and target project are external | No | NEEDS INTEGRATION |
-| Notifications and lineage | Tables, deduplication, RLS, realtime membership, and lineage schema present | Verify backend/indexer workers consume the contract | No, downstream runtimes are external | No | NEEDS INTEGRATION |
-| Indexer persistence contract | Checkpoint, reorg, event idempotency, and reconciliation schema present | Verify with `celoht-indexer` and official contract metadata | No, downstream repos are external | No | NEEDS INTEGRATION |
-| Deployment | Supabase CLI procedure documented; no target project supplied | Apply and verify in staging/production Supabase | No | No | NEEDS DEPLOYMENT |
-| Documentation and CI | CI workflow, ownership docs, migration docs, and readiness evidence present | Maintain evidence as target environments are verified | Yes | No | VERIFIED LOCALLY |
-
-## P0
-
-- No P0 blockers remain for this schema repository.
-
-## P1
-
-- Downstream `celoht-backend` and `celoht-indexer` contract verification is still required.
-- The remaining RLS test plan in `docs/RLS_TEST_PLAN.md` should be executed against a live Supabase target.
-- Independent security review remains outstanding.
-
-## P2
-
-- Add automated integration tests covering expected backend/indexer schema contracts.
-- Expand deployment health and observability checks.
-- Add explicit environment-matrix documentation for test/staging/production.
-
-## Remaining Blockers
-
-### 1. Live environment verification
-
-WHAT IS MISSING: An applied, disposable Supabase project test run using the repository’s migrations and RLS checks.
-
-WHY IT MATTERS: Local validation does not prove production deployment compatibility or policy behavior on a live target.
-
-WHAT IS REQUIRED: Apply migrations to a disposable project and rerun repository validation plus RLS smoke tests.
-
-### 2. Production deployment metadata verification
-
-WHAT IS MISSING: Verified contract addresses, deployment metadata, and environment configuration from the official smart-contracts deployment source.
-
-WHY IT MATTERS: The schema references Celo Sepolia and expects runtime metadata from downstream repos; production deployment cannot be claimed without verified contract addresses and settings.
-
-WHAT IS REQUIRED: Confirm the official deployment manifest and sync it into runtime configuration for the indexer/backend.
-
-### 3. Downstream integration verification
-
-WHAT IS MISSING: Verified runtime behavior of `celoht-backend` and `celoht-indexer` against this schema.
-
-WHY IT MATTERS: This repo is infrastructure-only and must be proven compatible with the consumers that use it.
-
-WHAT IS REQUIRED: Run end-to-end integration checks in a disposable project and environment that mirrors the intended network and service roles.
-
-## External Audit Status
-
-### PENDING EXTERNAL AUDIT
-
-- Independent security review of the database/RLS and storage configuration.
-
-## Evidence
-
-- Local validation command run: `npm run validate`
-- Result: `Validated 20 SQL migrations and 36 required tables.`
-- PostgreSQL 16 result: `database tests passed`; `Disposable PostgreSQL verification passed.`
-- CI workflow file: `.github/workflows/validate.yml`
-- Smoke test file: `tests/database.sql`
-- Architecture and ownership docs: `ARCHITECTURE.md`, `OWNERSHIP.md`, `SCHEMA.md`
-- Migration documentation: `MIGRATIONS.md`
-- Security documentation: `SECURITY.md`
-- Deployment guidance: `DEPLOYMENT.md`
-
-## Final Status
-
-### NOT READY — EXTERNAL ENVIRONMENT VERIFICATION PENDING
-
-Internal static validation passes. Disposable PostgreSQL execution, managed
-Supabase deployment, and backend/indexer/governance runtime compatibility
-remain unverified external dependencies.
-
-## Next Action
-
-Provision a managed Supabase staging project, apply the immutable migrations,
-and run the backend smoke suite with its required service configuration.
+NOT READY — remaining blockers: live Supabase staging verification required; official downstream runtime verification required.

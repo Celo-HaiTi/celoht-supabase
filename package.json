@@ -4,7 +4,8 @@
   "type": "module",
   "scripts": {
     "validate": "node schema-check.mjs",
-    "verify:postgres": "bash scripts/verify-disposable.sh"
+    "verify:postgres": "bash scripts/verify-disposable.sh",
+    "guard:mock-data": "node scripts/mock-data-guard.mjs"
   },
   "engines": {
     "node": ">=20"
