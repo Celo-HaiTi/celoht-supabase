@@ -1,4 +1,4 @@
-# DATABASE.md — CeloHT Supabase Schema
+# DATABASE.md — Celo-HaiTi Supabase Schema
 
 ## Scope
 This document describes the relational schema created by root migrations `0001`–`0012`.

@@ -37,10 +37,10 @@ create table if not exists public.role_permissions (
 );
 
 insert into public.roles (name, description) values
-  ('user', 'Authenticated CeloHT user'),
-  ('agent', 'Approved CeloHT service agent'),
+  ('user', 'Authenticated Celo-HaiTi user'),
+  ('agent', 'Approved Celo-HaiTi service agent'),
   ('reviewer', 'Reviewer of agent and impact evidence'),
-  ('admin', 'CeloHT platform administrator')
+  ('admin', 'Celo-HaiTi platform administrator')
 on conflict (name) do nothing;
 
 insert into public.permissions (name, description) values

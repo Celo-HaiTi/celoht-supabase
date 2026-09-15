@@ -1,4 +1,4 @@
-# CeloHT Database Architecture
+# Celo-HaiTi Database Architecture
 
 This repository owns the Supabase/PostgreSQL persistence layer only. The
 runtime boundary is:

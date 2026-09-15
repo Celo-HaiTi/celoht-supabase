@@ -1,4 +1,4 @@
-# CeloHT Production Readiness
+# Celo-HaiTi Production Readiness
 
 ## Executive Status
 

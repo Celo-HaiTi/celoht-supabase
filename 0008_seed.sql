@@ -1,7 +1,7 @@
 -- 0008_seed.sql
 -- Intentionally contains NO application data.
 --
--- CeloHT has no authoritative production data at the time of this migration.
+-- Celo-HaiTi has no authoritative production data at the time of this migration.
 -- Per project policy, this schema must never be seeded with fake users,
 -- fake agents, fake transactions, fake balances, or fake governance results.
 --

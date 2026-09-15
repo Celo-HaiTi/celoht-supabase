@@ -2,9 +2,9 @@
 
 ## Repository Role
 
-This repository is the CeloHT Supabase/PostgreSQL infrastructure layer. It does not contain a user-facing application, backend runtime, indexer runtime, or smart contracts. Its real role is to provide reproducible database migrations, schema ownership boundaries, Row Level Security (RLS), private storage configuration, audit/health tables, notification persistence contracts, and validation artifacts that downstream CeloHT repositories can consume.
+This repository is the Celo-HaiTi Supabase/PostgreSQL infrastructure layer. It does not contain a user-facing application, backend runtime, indexer runtime, or smart contracts. Its real role is to provide reproducible database migrations, schema ownership boundaries, Row Level Security (RLS), private storage configuration, audit/health tables, notification persistence contracts, and validation artifacts that downstream Celo-HaiTi repositories can consume.
 
-The repository is intentionally a schema foundation for the broader CeloHT ecosystem. Based on the existing files, the intended runtime boundary is:
+The repository is intentionally a schema foundation for the broader Celo-HaiTi ecosystem. Based on the existing files, the intended runtime boundary is:
 
 - `celoht-smart-contracts` -> `celoht-indexer` -> `celoht-supabase` -> `celoht-backend` -> dApp/Admin
 
@@ -62,7 +62,7 @@ This is acceptable for a schema foundation repository, but it must not be mistak
 
 ## Dependencies
 
-This repository depends on external CeloHT repositories and services:
+This repository depends on external Celo-HaiTi repositories and services:
 
 - `celoht-smart-contracts` for official deployment metadata, ABI references, and verified contract addresses.
 - `celoht-indexer` for blockchain event ingestion, synchronization checkpoints, reorg handling, and durable event processing.

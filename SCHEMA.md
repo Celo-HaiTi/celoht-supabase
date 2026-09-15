@@ -1,4 +1,4 @@
-# CeloHT Canonical Schema
+# Celo-HaiTi Canonical Schema
 
 The canonical normalized surface is introduced by `0009_schema_production.sql`.
 The earlier tables remain compatibility surfaces during consumer migration and
@@ -22,6 +22,6 @@ chain and height. Events are idempotent on
 ## Asset rules
 
 Celo Sepolia (`11142220`) is the configured network. USDm is the settlement
-asset and CELO is gas only. The database does not create a CeloHT token or
-invent contract addresses; deployment metadata comes from the official
+asset and CELO is gas only. The database does not create a project-native
+token or invent contract addresses; deployment metadata comes from the official
 smart-contracts repository at indexer startup.

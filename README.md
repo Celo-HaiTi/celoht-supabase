@@ -63,7 +63,7 @@ present in this schema-only checkout.
 
 ## Network status
 
-CeloHT's on-chain contracts currently exist on **Celo Sepolia** (chain ID
+Celo-HaiTi's on-chain contracts currently exist on **Celo Sepolia** (chain ID
 `11142220`). This schema does not hardcode any contract address — those are
 loaded at runtime by `celoht-indexer` from
 `Celo-HaiTi/celoht-smart-contracts` deployment metadata. Mainnet

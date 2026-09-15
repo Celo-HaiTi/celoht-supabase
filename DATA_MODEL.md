@@ -1,4 +1,4 @@
-# CeloHT Data Model
+# Celo-HaiTi Data Model
 
 ## Identity and authorization
 
