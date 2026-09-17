@@ -12,7 +12,7 @@ authorization decisions that matter are enforced either by:
   exposed via a `NEXT_PUBLIC_*` environment variable.
 - No table trusts a client-supplied role/flag for authorization.
 - Normalized role and permission assignments are stored server-side in
-  `profile_roles` and `role_permissions`; role changes synchronize the legacy
+  `profile_roles` and `role_permissions`; role changes synchronize the previous
   profile field through a security-definer trigger.
 - `audit_logs` has no update or delete policy for any Postgres role reachable
   from the API layer — it is append-only in practice.

@@ -88,7 +88,7 @@ create trigger trg_profiles_default_role
   after insert on public.profiles
   for each row execute function public.assign_default_user_role();
 
-create or replace function public.sync_legacy_profile_role()
+create or replace function public.sync_profile_role()
 returns trigger
 language plpgsql
 security definer
@@ -107,7 +107,7 @@ drop trigger if exists trg_profiles_sync_role on public.profiles;
 create trigger trg_profiles_sync_role
   after update of role on public.profiles
   for each row when (old.role is distinct from new.role)
-  execute function public.sync_legacy_profile_role();
+  execute function public.sync_profile_role();
 
 create or replace function public.has_role(required_roles text[])
 returns boolean

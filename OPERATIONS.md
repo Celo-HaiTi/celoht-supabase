@@ -1,6 +1,6 @@
 # Operations
 
-Monitor `indexer_sync_state`, legacy `indexer_state`, `system_health`, and
+Monitor `indexer_sync_state`, previous `indexer_state`, `system_health`, and
 open `indexer_reconciliation_issues`. Alert on stale checkpoints, `error` or
 `paused` status, critical discrepancies, and unexpected orphaned blocks.
 

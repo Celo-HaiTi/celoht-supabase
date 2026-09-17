@@ -12,7 +12,7 @@ writable unless an explicit policy grants it.** There is no table-level
 
 ## Roles
 Roles live in normalized `roles`, `permissions`, `profile_roles`, and
-`role_permissions` tables. The legacy `profiles.role` field is synchronized
+`role_permissions` tables. The previous `profiles.role` field is synchronized
 into that catalog. Roles are
 **assigned server-side only**, via backend logic running with the service
 role or via direct admin action. They are never derived from:

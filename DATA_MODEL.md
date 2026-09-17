@@ -4,7 +4,7 @@
 
 `profiles` links Supabase Auth users. `wallet_identities` stores verified
 wallet associations. `roles`, `permissions`, `profile_roles`, and
-`role_permissions` provide normalized server-side authorization. The legacy
+`role_permissions` provide normalized server-side authorization. The previous
 `profiles.role` column is synchronized into `profile_roles` for compatibility.
 
 ## Agents and education

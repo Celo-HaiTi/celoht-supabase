@@ -1,5 +1,5 @@
 -- 0016_auth_predicate_hardening.sql
--- Replace legacy auth.role() predicates with authenticated-subject checks.
+-- Replace older auth.role() predicates with authenticated-subject checks.
 -- Authorization remains based on auth.uid() and server-side roles/permissions.
 
 drop policy if exists blockchain_networks_select_authenticated on public.blockchain_networks;

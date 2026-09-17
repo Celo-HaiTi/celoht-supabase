@@ -29,7 +29,7 @@ grant execute on function public.current_profile_role() to anon, authenticated;
 
 revoke execute on function public.set_updated_at() from public, anon, authenticated;
 revoke execute on function public.assign_default_user_role() from public, anon, authenticated;
-revoke execute on function public.sync_legacy_profile_role() from public, anon, authenticated;
+revoke execute on function public.sync_profile_role() from public, anon, authenticated;
 revoke execute on function public.reject_audit_mutation() from public, anon, authenticated;
 
 comment on schema public is

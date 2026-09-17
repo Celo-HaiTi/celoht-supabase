@@ -18,7 +18,7 @@ Migrations are numbered and must be applied in order:
 13. `0013_auth_challenges.sql` (server-only wallet authentication challenge ledger used by `celoht-backend`)
 14. `0014_notifications.sql` (durable notifications, monitored transactions, announcements, preferences, and push delivery state)
 15. `0015_notifications_rls.sql` (notification access policies and announcement administration permissions)
-16. `0016_auth_predicate_hardening.sql` (remove legacy `auth.role()` authorization predicates)
+16. `0016_auth_predicate_hardening.sql` (remove previous `auth.role()` authorization predicates)
 17. `0017_indexer_notification_lineage.sql` (durable worker checkpoint metadata and notification event lineage)
 18. `0018_grants_and_function_security.sql` (explicit Data API privileges and SECURITY DEFINER boundaries)
 19. `0019_client_privilege_hardening.sql` (remove client writes to server-owned tables)

@@ -26,7 +26,7 @@ SQL migrations (repository root):
   0013_auth_challenges.sql    backend-owned wallet nonce/challenge ledger
   0014_notifications.sql     durable notification and transaction data layer
   0015_notifications_rls.sql notification access and admin announcement RLS
-  0016_auth_predicate_hardening.sql legacy auth predicate cleanup
+  0016_auth_predicate_hardening.sql auth predicate cleanup
   0017_indexer_notification_lineage.sql checkpoint and notification lineage
   0018_grants_and_function_security.sql explicit Data API grants and function security
   0019_client_privilege_hardening.sql revoke client writes to server-owned tables
