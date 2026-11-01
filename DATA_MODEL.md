@@ -15,7 +15,10 @@ stores private review submissions; `agent_activity` stores activity references.
 
 `courses` -> `course_modules` -> `lessons` is the content hierarchy.
 `enrollments` and `lesson_progress` track user progress without granting
-certificate authority. Certificates must be issued only by the authorized
+certificate authority. `quizzes`, `quiz_questions`, and `quiz_options` hold
+published content; `quiz_answer_keys` is server-only. `quiz_attempts` and
+`quiz_responses` are profile-scoped, while submission and grading fields are
+server-owned. Certificates must be issued only by the authorized
 backend/on-chain lifecycle.
 
 ## Chain projection
@@ -31,6 +34,9 @@ floating point for money or token quantities.
 
 ## Reforestation and administration
 
-`donations` is linked to an observed blockchain event. `tree_records` and
+`donations` is linked to an observed blockchain event. `reforestation_evidence`
+is submitted separately and `reforestation_evidence_reviews` preserves
+append-only reviewer decisions. Each decision updates the review summary;
+only approval sets verified planting counts. `tree_records` and
 `impact_records` are backend evidence and metrics; neither is inferred from a
 donation. `administrative_actions` complements the append-only `audit_logs`.

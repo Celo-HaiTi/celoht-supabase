@@ -23,6 +23,7 @@ Migrations are numbered and must be applied in order:
 18. `0018_grants_and_function_security.sql` (explicit Data API privileges and SECURITY DEFINER boundaries)
 19. `0019_client_privilege_hardening.sql` (remove client writes to server-owned tables)
 20. `0020_indexer_contract_compatibility.sql` (checkpoint RPC and transaction index compatibility)
+21. `0021_canonical_pilot_completion.sql` (verified wallet guards, quizzes, and auditable planting evidence review)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:
@@ -59,3 +60,18 @@ CI applies every migration with `ON_ERROR_STOP=1` and runs
 `tests/database.sql`. A disposable Supabase project remains a required
 pre-production check because local PostgreSQL does not reproduce every
 Supabase-managed grant and storage implementation detail.
+
+## Migration 0021 rollout and rollback
+Before applying `0021`, verify that no primary wallet is unverified and every
+existing `agent_profiles.wallet_identity_id` belongs to that applicant and has
+`verified_at` set. The migration fails with a preflight error if either
+condition is not met; reconcile these records through the verified backend
+workflow rather than fabricating verification timestamps.
+
+The migration is additive to the canonical history. Its evidence-review
+records are append-only and quiz attempts/answers may become user data, so
+rollback must not drop their tables after they contain records. Prefer a
+forward corrective migration. If a rollback is unavoidable before pilot data
+exists, disable new client writes first, archive the new tables, and remove
+the new policies/functions/constraints only in a reviewed migration. Never
+rewrite `0001`-`0020` or delete audit/review history to make a rollback pass.

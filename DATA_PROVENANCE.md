@@ -5,9 +5,11 @@ events, payment facts, registry state, and governance observations. The
 indexer stores decoded projections with chain, block, transaction, contract,
 log, timestamp, and confirmation provenance.
 
-The backend is authoritative for profiles, wallet-link workflows, KYC review,
-education progress, project catalog data, physical-impact evidence, and
-administrative workflows. A contribution never implies a planted tree.
+The backend is authoritative for profiles, verified wallet-link workflows,
+KYC review, quiz grading, education progress, project catalog data,
+physical-impact evidence, and administrative workflows. Planting evidence is
+submitted separately and requires an append-only reviewer decision before it
+is considered verified. A contribution never implies a planted tree.
 
 When chain, indexer, and database disagree, the indexer records an
 `indexer_reconciliation_issues` row. Orphaned chain observations remain for

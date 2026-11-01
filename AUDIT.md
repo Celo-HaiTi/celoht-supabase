@@ -28,12 +28,13 @@ Key architectural points:
 
 The repository already contains a substantial and well-structured migration set:
 
-- `0001_extensions.sql` through `0020_indexer_contract_compatibility.sql` provide the current migration chain.
+- `0001_extensions.sql` through `0021_canonical_pilot_completion.sql` provide the current migration chain.
 - `0003_schema_core.sql` and `0009_schema_production.sql` establish normalized production entities.
 - `0006_rls.sql`, `0010_rls_production.sql`, and `0015_notifications_rls.sql` define access control.
 - `0007_storage.sql` and `0011_storage_production.sql` define private storage buckets for sensitive documents.
 - `0013_auth_challenges.sql` establishes the backend-owned wallet nonce/challenge ledger.
 - `0014_notifications.sql` and `0015_notifications_rls.sql` establish durable notification storage and access policies.
+- `0021_canonical_pilot_completion.sql` adds server-controlled wallet verification, quiz assessment, and auditable planting evidence review.
 - `0012_schema_hardening.sql`, `0016_auth_predicate_hardening.sql`, and `0017_indexer_notification_lineage.sql` add hardening, cleanup, and lineage tracking.
 - `schema-check.mjs` verifies that required tables, RLS enablement, uniqueness constraints, storage/bucket rules, and notification/indexer guarantees exist.
 - GitHub Actions in `.github/workflows/validate.yml` run validations and SQL syntax checks in CI.

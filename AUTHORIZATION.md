@@ -19,6 +19,15 @@
    the state change.
 4. The indexer never makes authorization decisions — it only writes
    objectively-decoded on-chain facts.
+5. Reviewer and administrator access is derived from `profile_roles` and
+   `role_permissions` through `has_permission`; client metadata and role
+   claims are never authoritative. `impact.review` is required for evidence
+   decisions, and reviewers cannot approve their own submissions.
+6. Wallet identities begin unverified. Only the trusted backend may set
+   `verified_at`/`is_primary`; an agent application must reference that
+   applicant's verified wallet identity.
+7. Quiz answer keys, submission timestamps, and grading fields are server-only.
+   A client response is not a grade or certificate.
 
 ## Bootstrapping the first admin
 There is intentionally no self-service path to the `admin` role. The first

@@ -39,12 +39,43 @@ on conflict (id) do nothing;
 insert into public.lessons (id, module_id, title, order_index)
 values ('10000000-0000-0000-0000-000000000003', '10000000-0000-0000-0000-000000000002', 'Lesson', 0)
 on conflict (id) do nothing;
+insert into public.quizzes (id, lesson_id, title, status)
+values ('40000000-0000-0000-0000-000000000001', '10000000-0000-0000-0000-000000000003', 'Quiz isolation fixture', 'published')
+on conflict (id) do nothing;
+insert into public.quiz_questions (id, quiz_id, prompt, order_index)
+values ('40000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000001', 'Question fixture', 0)
+on conflict (id) do nothing;
+insert into public.quiz_options (id, question_id, option_text, order_index) values
+  ('40000000-0000-0000-0000-000000000003', '40000000-0000-0000-0000-000000000002', 'Option one', 0),
+  ('40000000-0000-0000-0000-000000000004', '40000000-0000-0000-0000-000000000002', 'Option two', 1)
+on conflict (id) do nothing;
+insert into public.quiz_answer_keys (question_id, correct_option_id)
+values ('40000000-0000-0000-0000-000000000002', '40000000-0000-0000-0000-000000000003')
+on conflict (question_id) do nothing;
+insert into public.quiz_attempts (id, quiz_id, profile_id) values
+  ('40000000-0000-0000-0000-000000000005', '40000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001'),
+  ('40000000-0000-0000-0000-000000000006', '40000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000002')
+on conflict (id) do nothing;
+
+insert into public.wallet_identities (id, profile_id, address)
+values ('50000000-0000-0000-0000-000000000001', '00000000-0000-0000-0000-000000000001', '0x0000000000000000000000000000000000000003')
+on conflict (id) do nothing;
+
+insert into public.reforestation_projects (id, title, status)
+values ('60000000-0000-0000-0000-000000000001', 'Evidence isolation fixture', 'published')
+on conflict (id) do nothing;
+insert into public.reforestation_evidence (id, project_id, storage_path, submitted_by)
+values
+  ('60000000-0000-0000-0000-000000000002', '60000000-0000-0000-0000-000000000001', 'private/user-a/evidence-a', '00000000-0000-0000-0000-000000000001'),
+  ('60000000-0000-0000-0000-000000000003', '60000000-0000-0000-0000-000000000001', 'private/user-b/evidence-b', '00000000-0000-0000-0000-000000000002')
+on conflict (id) do nothing;
+
 insert into public.course_progress (id, profile_id, lesson_id, completed)
 values ('10000000-0000-0000-0000-000000000004', '00000000-0000-0000-0000-000000000002', '10000000-0000-0000-0000-000000000003', false)
 on conflict (id) do nothing;
 
-insert into public.wallet_identities (profile_id, address)
-select id, wallet_address from public.profiles
+insert into public.wallet_identities (profile_id, address, verified_at)
+select id, wallet_address, now() from public.profiles
 where id in (
   '00000000-0000-0000-0000-000000000001',
   '00000000-0000-0000-0000-000000000002'
@@ -106,6 +137,63 @@ begin
     raise exception 'own notification is not readable';
   end if;
 
+  select count(*) into visible_rows from public.quiz_attempts;
+  if visible_rows <> 1 then
+    raise exception 'quiz attempts are not isolated by profile';
+  end if;
+
+  select count(*) into visible_rows from public.reforestation_evidence;
+  if visible_rows <> 1 then
+    raise exception 'unverified planting evidence is not isolated by submitter';
+  end if;
+
+  insert into public.quiz_responses (attempt_id, quiz_id, question_id, selected_option_id)
+  values (
+    '40000000-0000-0000-0000-000000000005',
+    '40000000-0000-0000-0000-000000000001',
+    '40000000-0000-0000-0000-000000000002',
+    '40000000-0000-0000-0000-000000000003'
+  );
+
+  begin
+    perform count(*) from public.quiz_answer_keys;
+    raise exception 'authenticated users can read quiz answer keys';
+  exception when insufficient_privilege then
+    null;
+  end;
+
+  begin
+    update public.quiz_attempts set score = 100, passed = true, submitted_at = now(), graded_at = now()
+    where id = '40000000-0000-0000-0000-000000000005';
+    raise exception 'authenticated user can grade a quiz attempt';
+  exception when insufficient_privilege then
+    null;
+  end;
+
+  begin
+    insert into public.wallet_identities (profile_id, address, verified_at)
+    values ('00000000-0000-0000-0000-000000000001', '0x0000000000000000000000000000000000000004', now());
+    raise exception 'authenticated user can self-assert wallet verification';
+  exception when insufficient_privilege then
+    null;
+  end;
+
+  begin
+    update public.wallet_identities set verified_at = now()
+    where id = '50000000-0000-0000-0000-000000000001';
+    raise exception 'authenticated user can verify a wallet';
+  exception when insufficient_privilege then
+    null;
+  end;
+
+  begin
+    insert into public.agent_profiles (profile_id, wallet_identity_id)
+    values ('00000000-0000-0000-0000-000000000001', '50000000-0000-0000-0000-000000000001');
+    raise exception 'agent application accepted an unverified wallet';
+  exception when check_violation then
+    null;
+  end;
+
   update public.notifications
   set read_at = now()
   where id = '30000000-0000-0000-0000-000000000001';
@@ -117,6 +205,46 @@ set completed = true, completed_at = now()
 where profile_id = '00000000-0000-0000-0000-000000000002';
 
 reset role;
+
+insert into public.profile_roles (profile_id, role_id)
+select '00000000-0000-0000-0000-000000000001', id
+from public.roles where name = 'reviewer'
+on conflict do nothing;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000001', false);
+do $$
+declare
+  visible_rows integer;
+begin
+  select count(*) into visible_rows from public.reforestation_evidence;
+  if visible_rows <> 2 then
+    raise exception 'authorized reviewer cannot read evidence submissions';
+  end if;
+
+  insert into public.reforestation_evidence_reviews (
+    evidence_id, reviewer_id, decision, trees_verified, notes
+  ) values (
+    '60000000-0000-0000-0000-000000000003', '00000000-0000-0000-0000-000000000001', 'approved', 3, 'Reviewed fixture'
+  );
+
+  begin
+    insert into public.reforestation_evidence_reviews (evidence_id, reviewer_id, decision)
+    values ('60000000-0000-0000-0000-000000000002', '00000000-0000-0000-0000-000000000001', 'approved');
+    raise exception 'reviewer can approve their own evidence';
+  exception when insufficient_privilege then
+    null;
+  end;
+end;
+$$;
+reset role;
+
+delete from public.profile_roles pr
+using public.roles r
+where pr.role_id = r.id
+  and pr.profile_id = '00000000-0000-0000-0000-000000000001'
+  and r.name = 'reviewer';
+
 do $$
 begin
   if (select read_at is null from public.notifications where id = '30000000-0000-0000-0000-000000000001') then
@@ -126,8 +254,63 @@ begin
   if (select completed from public.course_progress where id = '10000000-0000-0000-0000-000000000004') then
     raise exception 'cross-user course progress was modified';
   end if;
+
+  if not exists (
+    select 1 from public.reforestation_evidence
+    where id = '60000000-0000-0000-0000-000000000003'
+      and status = 'verified' and trees_verified = 3
+      and verified_by = '00000000-0000-0000-0000-000000000001'
+  ) then
+    raise exception 'review decision did not update the verified evidence summary';
+  end if;
+
+  if not exists (
+    select 1 from public.audit_logs
+    where actor_id = '00000000-0000-0000-0000-000000000001'
+      and action = 'evidence_verification'
+      and target_table = 'reforestation_evidence'
+      and target_id = '60000000-0000-0000-0000-000000000003'
+  ) then
+    raise exception 'evidence review did not create its privileged-action audit log';
+  end if;
+
+  if exists (
+    select 1 from public.agent_profiles
+    where profile_id = '00000000-0000-0000-0000-000000000001'
+  ) then
+    raise exception 'unverified wallet created an agent application';
+  end if;
 end;
 $$;
+
+set role authenticated;
+select set_config('request.jwt.claim.sub', '00000000-0000-0000-0000-000000000002', false);
+do $$
+declare
+  visible_rows integer;
+begin
+  select count(*) into visible_rows from public.quiz_attempts;
+  if visible_rows <> 1 then
+    raise exception 'user cannot read their own quiz attempt';
+  end if;
+
+  select count(*) into visible_rows from public.quiz_responses;
+  if visible_rows <> 0 then
+    raise exception 'quiz responses are not isolated by attempt owner';
+  end if;
+
+  select count(*) into visible_rows from public.reforestation_evidence;
+  if visible_rows <> 1 then
+    raise exception 'unverified planting evidence is not isolated by submitter';
+  end if;
+
+  select count(*) into visible_rows from public.reforestation_evidence_reviews;
+  if visible_rows <> 1 then
+    raise exception 'evidence submitter cannot read their own review';
+  end if;
+end;
+$$;
+reset role;
 
 insert into public.blockchain_networks (chain_id, network, native_symbol, is_enabled)
 values (11142220, 'celo-sepolia-test', 'CELO', true)
@@ -217,14 +400,16 @@ begin
     'profiles', 'wallet_identities', 'roles', 'permissions', 'profile_roles',
     'role_permissions', 'agents', 'agent_kyc', 'agent_profiles',
     'agent_verifications', 'agent_activity', 'courses', 'course_modules',
-    'lessons', 'course_progress', 'certificates', 'enrollments',
+    'lessons', 'quizzes', 'quiz_questions', 'quiz_options', 'quiz_answer_keys',
+    'quiz_attempts', 'quiz_responses', 'course_progress', 'certificates', 'enrollments',
     'lesson_progress', 'blockchain_networks', 'contracts', 'indexed_blocks',
     'indexed_transactions', 'blockchain_events', 'indexer_sync_state',
     'donations', 'tree_records', 'impact_records', 'administrative_actions',
     'audit_logs', 'system_health', 'indexer_reconciliation_issues',
     'security_events', 'notification_preferences', 'announcements',
     'notifications', 'monitored_transactions', 'push_subscriptions',
-    'notification_delivery_attempts', 'auth_challenges'
+    'notification_delivery_attempts', 'auth_challenges',
+    'reforestation_evidence_reviews'
   ]) as required_table
   left join pg_class c on c.relname = required_table
   left join pg_namespace n on n.oid = c.relnamespace and n.nspname = 'public'

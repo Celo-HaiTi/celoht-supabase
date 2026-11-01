@@ -6,13 +6,16 @@ const sql = files.map((file) => fs.readFileSync(file, 'utf8')).join('\n');
 const requiredTables = [
   'profiles', 'wallet_identities', 'roles', 'permissions', 'profile_roles',
   'agent_profiles', 'agent_verifications', 'agent_activity', 'courses',
-  'course_modules', 'lessons', 'enrollments', 'lesson_progress', 'certificates',
+  'course_modules', 'lessons', 'quizzes', 'quiz_questions', 'quiz_options',
+  'quiz_answer_keys', 'quiz_attempts', 'quiz_responses', 'enrollments',
+  'lesson_progress', 'certificates',
   'auth_challenges', 'reforestation_projects', 'donations', 'tree_records', 'impact_records',
   'blockchain_networks', 'contracts', 'indexed_blocks', 'indexed_transactions',
   'blockchain_events', 'indexer_sync_state', 'system_health', 'audit_logs',
   'administrative_actions', 'indexer_reconciliation_issues', 'security_events',
   'notification_preferences', 'announcements', 'notifications',
   'monitored_transactions', 'push_subscriptions', 'notification_delivery_attempts',
+  'reforestation_evidence_reviews',
 ];
 
 for (const table of requiredTables) {
@@ -81,6 +84,15 @@ if (!files.includes('0020_indexer_contract_compatibility.sql')) {
 }
 if (!sql.includes('commit_indexer_checkpoint')) {
   throw new Error('missing atomic indexer checkpoint function');
+}
+if (!sql.includes('trg_agent_profiles_require_verified_wallet')) {
+  throw new Error('agent applications must require a verified wallet identity');
+}
+if (!sql.includes('quiz_answer_keys') || !sql.includes('SERVER ONLY')) {
+  throw new Error('quiz answer keys must remain server-only');
+}
+if (!sql.includes('evidence_reviews_insert_reviewer')) {
+  throw new Error('evidence review must require reviewer authorization');
 }
 
 console.log(`Validated ${files.length} SQL migrations and ${requiredTables.length} required tables.`);

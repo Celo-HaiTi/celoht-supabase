@@ -28,7 +28,7 @@
 
 ## Current evidence
 
-- Repository static validation passes for 20 migrations.
+- Repository static validation passes for 21 migrations.
 - Disposable PostgreSQL migration and smoke tests pass.
 - Public Celo Sepolia RPC chain ID and deployed bytecode checks pass.
 - Full ABI-to-bytecode verification and live indexer runtime verification were

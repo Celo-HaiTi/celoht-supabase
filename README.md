@@ -31,6 +31,7 @@ SQL migrations (repository root):
   0018_grants_and_function_security.sql explicit Data API grants and function security
   0019_client_privilege_hardening.sql revoke client writes to server-owned tables
   0020_indexer_contract_compatibility.sql indexer checkpoint RPC and transaction index
+  0021_canonical_pilot_completion.sql verified wallets, quizzes, planting review
 
 Core documentation is kept at the repository root. Supporting plans and audit
 artifacts are kept under `docs/`.
@@ -40,7 +41,7 @@ artifacts are kept under `docs/`.
 
 The migrations are stored in the repository root, not in
 `supabase/migrations/`. To apply them with the Supabase SQL Editor, run the SQL
-files in order from `0001` through `0020`.
+files in order from `0001` through `0021`.
 
 For local verification:
 
@@ -95,6 +96,7 @@ official Mainnet deployment file.
 - [STORAGE.md](STORAGE.md)
 - [SCHEMA.md](SCHEMA.md)
 - [DATA_PROVENANCE.md](DATA_PROVENANCE.md)
+- [Canonical database audit](docs/CANONICAL_DATABASE_AUDIT.md)
 - [BACKUP_RECOVERY.md](BACKUP_RECOVERY.md)
 - [OPERATIONS.md](OPERATIONS.md)
 - [NOTIFICATIONS.md](NOTIFICATIONS.md)
