@@ -74,3 +74,13 @@
 ## Final Certification
 
 NOT READY — remaining blockers: live Supabase staging verification required; official downstream runtime verification required.
+
+## 2026-11-05 Follow-up
+
+- **VERIFIED WORKING:** `npm run validate` validates 22 numbered migrations and 43 required tables.
+- **VERIFIED WORKING:** `npm run verify:postgres` applies the complete migration chain to disposable PostgreSQL 16 and passes the database isolation suite, including checkpoint rollback, successful dual-ledger advancement, block-anchor persistence, and denial of checkpoint RPC execution to browser roles.
+- **VERIFIED WORKING:** `npm run guard:mock-data` passes; `npm audit --audit-level=high` reports zero vulnerabilities.
+- **IMPLEMENTED BUT NOT VERIFIED:** Migration `0022_atomic_indexer_checkpoint_compatibility.sql` requires both checkpoint rows before advancing the checkpoint RPC. Its behavior is verified locally, but it has not been applied to a managed Supabase project.
+- **BLOCKED:** Live Supabase migration/RLS/storage verification and backend/indexer runtime integration require a configured staging project and server-side credentials.
+- **BLOCKED:** The indexer must initialize both checkpoint rows from official deployment metadata and address the canonical block conflict-key and reorg-retention mismatches documented in `docs/COMPATIBILITY_MATRIX.md`.
+- **NOT IMPLEMENTED IN THIS REPOSITORY:** Backend API, wallet authentication runtime, dApp workflows, contract deployment verification, and live Celo Sepolia synchronization belong to separate repositories or external environments.

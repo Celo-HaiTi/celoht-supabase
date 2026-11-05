@@ -82,8 +82,14 @@ if (!files.includes('0019_client_privilege_hardening.sql')) {
 if (!files.includes('0020_indexer_contract_compatibility.sql')) {
   throw new Error('missing indexer compatibility migration');
 }
+if (!files.includes('0022_atomic_indexer_checkpoint_compatibility.sql')) {
+  throw new Error('missing atomic checkpoint compatibility migration');
+}
 if (!sql.includes('commit_indexer_checkpoint')) {
   throw new Error('missing atomic indexer checkpoint function');
+}
+if (!sql.includes('Missing compatibility indexer state')) {
+  throw new Error('checkpoint function must reject missing compatibility state');
 }
 if (!sql.includes('trg_agent_profiles_require_verified_wallet')) {
   throw new Error('agent applications must require a verified wallet identity');

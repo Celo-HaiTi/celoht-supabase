@@ -24,6 +24,7 @@ Migrations are numbered and must be applied in order:
 19. `0019_client_privilege_hardening.sql` (remove client writes to server-owned tables)
 20. `0020_indexer_contract_compatibility.sql` (checkpoint RPC and transaction index compatibility)
 21. `0021_canonical_pilot_completion.sql` (verified wallet guards, quizzes, and auditable planting evidence review)
+22. `0022_atomic_indexer_checkpoint_compatibility.sql` (require both checkpoint ledgers to advance atomically)
 
 ## Applying to a clean Supabase project
 Using the Supabase CLI:

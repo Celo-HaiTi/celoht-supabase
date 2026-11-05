@@ -348,6 +348,102 @@ on conflict (chain_id, contract_id) do update set next_block = excluded.next_blo
 
 do $$
 begin
+  if has_function_privilege(
+    'anon',
+    'public.commit_indexer_checkpoint(integer,text,bigint,text,text,timestamp with time zone,bigint)',
+    'execute'
+  ) or has_function_privilege(
+    'authenticated',
+    'public.commit_indexer_checkpoint(integer,text,bigint,text,text,timestamp with time zone,bigint)',
+    'execute'
+  ) then
+    raise exception 'browser role can execute the service-only checkpoint RPC';
+  end if;
+end;
+$$;
+
+do $$
+declare
+  checkpoint_error text;
+begin
+  begin
+    perform public.commit_indexer_checkpoint(
+      11142220,
+      '0x0000000000000000000000000000000000000010',
+      2,
+      '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+      '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+      now(),
+      1
+    );
+  exception when others then
+    checkpoint_error := sqlerrm;
+  end;
+
+  if checkpoint_error is distinct from
+      'Missing compatibility indexer state for contract 0x0000000000000000000000000000000000000010 on chain 11142220' then
+    raise exception 'checkpoint did not reject missing compatibility state: %', checkpoint_error;
+  end if;
+
+  if exists (
+    select 1 from public.indexed_blocks
+    where chain_id = 11142220 and block_number = 2
+  ) then
+    raise exception 'failed checkpoint left a canonical block behind';
+  end if;
+end;
+$$;
+
+insert into public.indexer_state (chain_id, contract_name, contract_address)
+values (11142220, 'TestContract', '0x0000000000000000000000000000000000000010')
+on conflict (chain_id, contract_address) do nothing;
+
+select public.commit_indexer_checkpoint(
+  11142220,
+  '0x0000000000000000000000000000000000000010',
+  2,
+  '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc',
+  '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb',
+  now(),
+  1
+);
+
+do $$
+begin
+  if not exists (
+    select 1 from public.indexer_state
+    where chain_id = 11142220
+      and contract_address = '0x0000000000000000000000000000000000000010'
+      and last_processed_block = 2
+      and latest_confirmed_block = 1
+  ) then
+    raise exception 'compatibility checkpoint did not advance';
+  end if;
+
+  if not exists (
+    select 1 from public.indexer_sync_state
+    where chain_id = 11142220
+      and next_block = 3
+      and last_processed_block = 2
+      and latest_confirmed_block = 1
+  ) then
+    raise exception 'canonical checkpoint did not advance';
+  end if;
+
+  if not exists (
+    select 1 from public.indexed_blocks
+    where chain_id = 11142220
+      and block_number = 2
+      and block_hash = '0xcccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc'
+      and confirmation_status = 'canonical'
+  ) then
+    raise exception 'checkpoint block anchor was not persisted';
+  end if;
+end;
+$$;
+
+do $$
+begin
   if not exists (select 1 from storage.buckets where id = 'agent-kyc' and public = false)
     or not exists (select 1 from storage.buckets where id = 'reforestation-evidence' and public = false)
     or not exists (select 1 from storage.buckets where id = 'certificates' and public = false) then

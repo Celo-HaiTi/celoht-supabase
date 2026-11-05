@@ -32,6 +32,7 @@ SQL migrations (repository root):
   0019_client_privilege_hardening.sql revoke client writes to server-owned tables
   0020_indexer_contract_compatibility.sql indexer checkpoint RPC and transaction index
   0021_canonical_pilot_completion.sql verified wallets, quizzes, planting review
+  0022_atomic_indexer_checkpoint_compatibility.sql atomic checkpoint ledger advancement
 
 Core documentation is kept at the repository root. Supporting plans and audit
 artifacts are kept under `docs/`.
@@ -41,7 +42,7 @@ artifacts are kept under `docs/`.
 
 The migrations are stored in the repository root, not in
 `supabase/migrations/`. To apply them with the Supabase SQL Editor, run the SQL
-files in order from `0001` through `0021`.
+files in order from `0001` through `0022`.
 
 For local verification:
 

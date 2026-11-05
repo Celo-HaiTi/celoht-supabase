@@ -6,6 +6,17 @@ Static contract review: PARTIALLY VERIFIED. The current public backend and
 indexer source repositories were inspected at their shallow clone heads.
 Runtime compatibility against a real Supabase staging project remains BLOCKED.
 
+## Supabase schema follow-up (2026-11-05)
+
+Migration `0022_atomic_indexer_checkpoint_compatibility.sql` now makes
+`commit_indexer_checkpoint` fail atomically if either checkpoint ledger is
+missing. The indexer bootstrap must create both `indexer_state` and
+`indexer_sync_state` rows from official deployment metadata before invoking the
+RPC. Disposable PostgreSQL tests verify rollback on missing compatibility
+state, successful advancement of both ledgers, canonical block persistence,
+and denial of RPC execution to `anon` and `authenticated` roles. These checks
+do not replace staging verification; runtime compatibility remains BLOCKED.
+
 Backend source validation passed in the audit clone: typecheck and 24 unit
 tests. Indexer source validation passed in the audit clone: typecheck and 21
 unit tests. These are source-level checks, not staging integration evidence.
